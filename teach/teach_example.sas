@@ -1,3 +1,13 @@
+*1.OPEN CODE--壓縮資料;
+OPTIONS COMPRESS=YES;
+
+*2.OPEN CODE--清 LOG;
+DM'LOG;CLEAR;';
+
+*3.SYS--快速鍵:F1叫出help，(EG)查 shortcuts, keyboard
+						 (SAS)查Keyboard Shortcuts within the Enhanced Editor";
+
+
 *8.欄位相加減用SUM函數(若缺值仍能運算);
 data a;
 x1=.;
