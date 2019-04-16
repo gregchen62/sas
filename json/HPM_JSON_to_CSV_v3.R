@@ -1,0 +1,60 @@
+#need to save as ASCII ***
+setwd('E:/01_Project/09_PCSM/20190315_RC/HPM參數更新/上線後驗證/201903_201904')
+
+#install.packages("RJSONIO")
+library(RJSONIO)
+
+json_data <- list() # creates a list
+CC <- list()
+Seg<- list()
+T1ModelName<- list()
+a <- list()
+b<- list()
+c<- list()
+d<- list()
+e<- list()
+f<- list()
+g<- list()
+p1<- list()
+p2<- list()
+p3<- list()
+p4<- list()
+p5<- list()
+p6<- list()
+p7<- list()
+p8<- list()
+p9<- list()
+p10<- list()
+p11<- list()
+p12<- list()
+p13<- list()
+
+listjson <- dir(pattern = "*.json") # creates the list of all the json files in the directory
+for (k in 1:length(listjson)){
+ json_data[[k]] <- fromJSON(listjson[k])
+ a[[k]]<-json_data[[k]]$PerformanceStatistic$PCSMINPUT
+ Seg[[k]]<-list('Seg'=t(json_data[[k]]$PerformanceStatistic$PCSMOUTPUT$H02)[3])
+ T1ModelName[[k]]<-list('T1ModelName'=t(json_data[[k]]$PerformanceStatistic$PCSMOUTPUT$H02)[4])
+ b[[k]]<-list('T1_OriginalScore'=json_data[[k]]$PerformanceStatistic$PCSMOUTPUT$T1ScoreResult$OriginalScore)
+ c[[k]]<-list('T1_TransformedScore'=json_data[[k]]$PerformanceStatistic$PCSMOUTPUT$T1ScoreResult$TransformedScore)
+ d[[k]]<-list('T2_OriginalScore'=json_data[[k]]$PerformanceStatistic$PCSMOUTPUT$T2ScoreResult$OriginalScore)
+ e[[k]]<-list('T2_TransformedScore'=json_data[[k]]$PerformanceStatistic$PCSMOUTPUT$T2ScoreResult$TransformedScore)
+ f[[k]]<-list('FinalScore'=json_data[[k]]$PerformanceStatistic$PCSMOUTPUT$FinalScore)
+ g[[k]]<-list('FinalTransformedScore'=json_data[[k]]$PerformanceStatistic$PCSMOUTPUT$FinalTransformedScore)
+ p1[[k]]<-list('HpmUnitPrice'=json_data[[k]]$PerformanceStatistic$PCSMOUTPUT$HpmUnitPrice)
+ p2[[k]]<-list('HpmTotalPrice'=json_data[[k]]$PerformanceStatistic$PCSMOUTPUT$HpmTotalPrice) 
+ p3[[k]]<-list('HpmModelFlag'=json_data[[k]]$PerformanceStatistic$PCSMOUTPUT$HpmModelFlag)  
+ p4[[k]]<-list('StallFlag'=json_data[[k]]$PerformanceStatistic$PCSMOUTPUT$StallFlag)  
+ p5[[k]]<-list('PolicyHousePrice'=json_data[[k]]$PerformanceStatistic$PCSMOUTPUT$PolicyHousePrice)  
+ p6[[k]]<-list('PolicyStallPrice'=json_data[[k]]$PerformanceStatistic$PCSMOUTPUT$PolicyStallPrice)
+ p7[[k]]<-list('PolicyTotalPrice'=json_data[[k]]$PerformanceStatistic$PCSMOUTPUT$PolicyTotalPrice)
+ p8[[k]]<-list('PolicyTotalPriceWithStall'=json_data[[k]]$PerformanceStatistic$PCSMOUTPUT$PolicyTotalPriceWithStall)
+ p9[[k]]<-list('FinalHousePrice'=json_data[[k]]$PerformanceStatistic$PCSMOUTPUT$FinalHousePrice)
+ p10[[k]]<-list('FinalStallPrice'=json_data[[k]]$PerformanceStatistic$PCSMOUTPUT$FinalStallPrice)
+ p11[[k]]<-list('FinalTotalPrice'=json_data[[k]]$PerformanceStatistic$PCSMOUTPUT$FinalTotalPrice) 
+ p12[[k]]<-list('FinalTotalPriceWithStall'=json_data[[k]]$PerformanceStatistic$PCSMOUTPUT$FinalTotalPriceWithStall) 
+ p13[[k]]<-list('HierachyFlag'=json_data[[k]]$PerformanceStatistic$PCSMOUTPUT$HierachyFlag)
+ CC[[k]] <- c(a[[k]],Seg[[k]],T1ModelName[[k]],b[[k]],c[[k]],d[[k]],e[[k]],f[[k]],g[[k]],p1[[k]],p2[[k]],p3[[k]],p4[[k]],p5[[k]],p6[[k]],p7[[k]],p8[[k]],p9[[k]],p10[[k]],p11[[k]],p12[[k]],p13[[k]])
+ if (k==1) {  write.table(CC[[k]], file = "HPM_OUTPUT.csv",sep=",",append=F,col.names = TRUE,row.names=F,quote = TRUE) } 
+ else { write.table(CC[[k]], file = "HPM_OUTPUT.csv",sep=",",append=T,col.names = F, row.names=F ,quote = TRUE) }
+}
