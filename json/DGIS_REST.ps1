@@ -1,0 +1,3 @@
+Get-ChildItem -Path 'F:\HPM_UAT\DGIS_InputOutput\json2\' -Recurse -Include "*.json" |ForEach-Object { (Get-Content $_ ) -replace '''','"' |Set-Content $_ }
+Get-ChildItem -Path 'F:\HPM_UAT\DGIS_InputOutput\json2\' -Recurse -Include "*.json" |ForEach-Object { (Get-Content $_ ) -replace 'null','"NULL"' |Set-Content $_ }
+Get-ChildItem -Path 'F:\HPM_UAT\DGIS_InputOutput\json2\' -Recurse -Include "*.json" |ForEach-Object { (Get-Content $_ ) -replace '""NULL""','"NULL"' |Set-Content $_ }
