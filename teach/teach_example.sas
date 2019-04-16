@@ -123,3 +123,72 @@ set a;
 dt2=dt2+1;
 where dt2 >'01JAN2015'd;
 run;
+
+*20.Show所有欄位。out才會另外存，order照table欄順序;
+PROC CONTENTS DATA=rxltp.bns_loan_1508 DETAILS ORDER=VARNUM OUT=var_list;RUN;
+
+*21.Show所有Table;
+PROC DATASETS LIB=RXLTP DETAILS;RUN;
+
+*22.數字變文字;
+data a;
+x1=    81000     ;
+format x2 $8.;
+x2=STRIP(x1);/*STRIP去空白*/
+run;
+data b;
+x1='    8881    ';
+format x2 $8.;
+x2=put(x1,8. -L);
+x3=put(x1,8. -R);
+x4=put(x1,8. -C);
+run;
+
+*23.文字變數字;
+data a;
+x1='11111111110';
+x2=input(x1,best12.);
+run;
+
+*YYMM轉日期格式;
+data e;
+x1='1201';
+x3=x1||'01';
+x4='20'||x1||'01';
+format x2 yymmdd10.;
+/*x2=input(x1||'01',yymmdd8.);*/
+/*x2=input(x3,yymmdd8.);*/
+x2=input(x4,yymmdd8.);
+format x5 yymmdd6.;
+x5=input(x4,yymmdd8.);
+x6=put(x5,yymmdd10.);
+run;
+
+data a;
+x1='1201';
+format x2 yymmdd10.;
+x2=input(x1||'01',yymmdd8.);
+run;
+
+data aa;
+x1='1201';
+x2='1202';
+if x1>x2 then x3=1;else x3=0;
+run;
+
+*24.Data step vs. SQL;
+data a;
+set rxltp.bns_loan_1508;
+where Current_Bal>0;
+xxxx2=Current_Bal/1000000;
+if Current_Bal>10000 then xx3=1;else xx3=0;
+run;
+
+proc sql;
+create table b as
+select 
+*
+,case when Current_Bal>10000 then 1 else 0 end as xx3
+from rxltp.bns_loan_1508
+where Current_Bal>0
+;quit;
