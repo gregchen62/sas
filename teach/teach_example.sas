@@ -202,3 +202,19 @@ select
 from rxltp.bns_loan_1508
 where Current_Bal>0
 ;quit;
+
+*25.Email result;
+data a;
+v1=1111;
+run;
+ 
+filename outbox email "ba.sasmm@xxxxx.com"; 
+data _null_;
+file outbox
+to=("greg.chen@xxxxx.com")
+cc=()
+subject="SAS email test"
+;
+set a;
+put v1;
+run;
