@@ -1,0 +1,40 @@
+       01  HPORDR-REC.
+           03  HPORDR-KEY.
+               05  HPORDR-CPY-NO            PIC 9(02).
+               05  HPORDR-USR-NO            PIC X(06).
+               05  HPORDR-SECU-NME          PIC X(16).
+               05  HPORDR-ID                PIC X(01).
+               05  HPORDR-ORDER-NO          PIC X(06).
+               05  HPORDR-RT                PIC X(01).
+           03  HPORDR-NRIC-MAIN.
+               05  HPORDR-NRIC              PIC S9(07) USAGE COMP-3.
+               05  FILLER                   PIC X(03).
+           03  HPORDR-TIME1                 PIC X(06).
+           03  HPORDR-TIME2                 PIC X(06).
+           03  HPORDR-HP-SECUNO             PIC X(06).
+           03  HPORDR-PRICE                 PIC 9(03)V9(03).
+           03  HPORDR-QTY                   PIC 9(09).
+           03  HPORDR-UNDQTY                PIC 9(09).
+           03  HPORDR-BAL                   PIC S9(09).
+           03  HPORDR-STAT                  PIC X(01).
+           03  HPORDR-QUALFR                PIC X(01).
+           03  HPORDR-CONTRA                PIC X(01).
+           03  HPORDR-AMALGN                PIC X(01).
+           03  HPORDR-CPF                   PIC X(01).
+           03  HPORDR-COMM-TYPE             PIC X(01).
+           03  HPORDR-COMM                  PIC 9(05)V9(03).
+           03  HPORDR-NETT-PRICE            PIC 9(04)V9(03).
+           03  HPORDR-NEC-SECURITY.
+               05  HPORDR-NEC-SECUNO        PIC X(03).
+               05  FILLER                   PIC X(01).
+           03  HPORDR-DATE                  PIC X(08).
+           03  HPORDR-REMI-NO               PIC X(03).
+           03  HPORDR-REMI-NME              PIC X(16).
+           03  HPORDR-SECU-ACC-NO           PIC X(08).
+           03  HPORDR-BANK-CDE              PIC X(01).
+           03  HPORDR-BANK-REF-NO           PIC X(12).
+           03  HPORDR-HP-CPY-NO             PIC X(02).
+           03  HPORDR-HP-MKT                PIC X(01).
+           03  HPORDR-SETL-CCY              PIC X(01).
+           03  HPORDR-SECU-IBM-CODE         PIC X(04).
+           03  FILLER                       PIC X(09).

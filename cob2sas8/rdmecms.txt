@@ -1,0 +1,55 @@
+INSTALLING COB2SAS ON CMS
+
+Now that you've downloaded the COB2SAS8.ZIP file and unzipped it,
+follow the following instructions to install COB2SAS on CMS :
+
+1) Transfer all of the files, except for the HTML files, to your CMS
+   minidisk.  There's no need to transfer the HTML files.  For the CMS
+   filename, use the PC filename without the extension.  For filetype,
+   use COPY.  Use FTP or any other file transfer utility to move the
+   files to CMS.  Allow the ASCII to EBCDIC translation to occur in
+   the upload (i.e. do NOT do a binary upload)!  Be sure that every
+   CMS file is fixed record length with an LRECL of 80.
+
+2) Move the uploaded files into a MACLIB called COB2SAS.  Following is an
+   example of the syntax you would use to do this :
+
+     MACLIB GEN COB2SAS filename1 filename2 ... filenameN
+
+   * If by some chance, you can't use COB2SAS as your maclib name,
+     then you'll have to make modifications to the CMSDMS and R2CMS
+     files.  In this case, edit the CMSDMS and the R2CMS files
+     changing the following line :
+
+       %INCLUDE COB2SAS(xxxxx)
+
+     .. where xxxx is any program name ..
+
+       to %INCLUDE yourmaclibname(xxxxx)
+
+3) Verify your COB2SAS installation.  To run COB2SAS use the CMSDMS
+   program.  Make the necessary modifications to the FILENAME
+   statements as per the comments.  Point the INCOBOL fileref to the
+   CP1 file and run the program.
+
+   When the job completes, make sure you didn't get any ERRORS in the
+   SASLOG.
+
+   If you didn't receive any errors, then compare the output in the
+   OUTSAS file to the contents of the CP1LOG file.
+
+   If the contents of OUTSAS matches the contents of CP1LOG, then
+   compare the output in your SASLIST (or output window) to the
+   contents of the CP1LST file.
+
+   If everything matched up and you got no errors, then you're all
+   set.
+
+   If something didn't match, or if you got errors in your SASLOG,
+   then verify that you did everything correctly.  If so, then change
+   the options statement to include SOURCE and SOURCE2 options, rerun
+   the program, and contact the SAS Technical Support department at
+   919-677-8008 or send E-mail to support@sas.com.
+
+After you've verified your COB2SAS installation, you can use the
+CMSDMS program to execute COB2SAS.

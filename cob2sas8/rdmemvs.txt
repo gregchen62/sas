@@ -1,0 +1,49 @@
+INSTALLING COB2SAS ON MVS
+
+Now that you've downloaded the COB2SAS8.ZIP file and unzipped it,
+follow the following instructions to install COB2SAS on MVS :
+
+1) On MVS, allocate a PDS with the following characteristics :
+
+     SPACE=(6160,(220,20,7)),
+     DCB=(DSORG=PO,LRECL=80,BLKSIZE=6160,RECFM=FB)
+
+2) Transfer all of the files, except for the HTML files, into this new
+   PDS.  There is no need to upload the HTML files.  Use the PC
+   filename for the PDS member name dropping the extension.  Use FTP
+   or any other file transfer utility to move the files to MVS.  Allow
+   the ASCII to EBCDIC translation to occur in the upload (i.e. do NOT
+   do a binary upload)!
+
+3) Verify your COB2SAS installation.  To run COB2SAS use either the
+   MVSBATCH member or the MVSDMS member.  MVSBATCH contains the JCL to
+   execute COB2SAS in batch.  MVSDMS contains the statement you would
+   use to submit COB2SAS in interactive mode (or in a SAS/CONNECT
+   environment connecting to MVS).
+
+   Using one of these programs make the necessary modifications to the
+   FILENAME statement / DD Names as per the comments.  Point the
+   INCOBOL fileref/DDName to the CP1 member and run the program.
+
+   When the job completes, make sure you didn't get any ERRORS in the
+   SASLOG.
+
+   If you didn't receive any errors, then compare the output in the
+   OUTSAS fileref/DDname to the contents of the CP1LOG member.
+
+   If the contents of OUTSAS matches the contents of CP1LOG, then
+   compare the output in your SASLIST (or output window) to the
+   contents of the CP1LST member.
+
+   If everything matched up and you got no errors, then you're all
+   set.
+
+   If something didn't match, or if you got errors in your SASLOG,
+   then verify that you did everything correctly.  If so, then change
+   the options statement to include SOURCE and SOURCE2 options, rerun
+   the program, and contact the SAS Technical Support department at
+   919-677-8008 or send E-mail to support@sas.com.
+
+
+After you've verified your COB2SAS installation, you can use the same
+programs (MVSBATCH & MVSDMS) to execute COB2SAS.

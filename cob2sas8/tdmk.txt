@@ -1,0 +1,34 @@
+
+ The SAS(R) System is an integrated system of software providing
+ complete control over data management, analysis, and presentation.
+ Base SAS(R) software is the foundation of the SAS System.
+ Products within the SAS System include SAS/ACCESS(R), SAS/AF(R),
+ SAS/ASSIST(R), SAS/CPE(R), SAS/DMI(R), SAS/ETS(R), SAS/FSP(R),
+ SAS/GRAPH(R), SAS/IML(R), SAS/IMS-DLI(R), SAS/OR(R), SAS/QC(R),
+ SAS/REPLAY-CICS(R), SAS/SHARE(R), SAS/STAT(R) software,
+ SAS/CONNECT(TM), SAS/DB2(TM), and SAS/SQL-DS(TM). Other SAS
+ Institute products include SYSTEM 2000(R) Data Management Software,
+ including basic SYSTEM 2000(R), CREATE(TM), Multi-User(TM),
+ QueX(TM), Screen Writer(TM), and CICS interface software; JMP(TM)
+ software; NeoVisuals(R) software; SAS/RTERM(R) software; and
+ SAS/C(R) and SAS/CX(TM) compilers under MVS and CMS.
+
+ SAS Communications(R), SAS Training(R), SAS Views(R), and the
+ SASware Ballot(R) are published by SAS Institute Inc.
+
+ SAS/ACCESS, SAS/AF, SAS/ASSIST, SAS/C, SAS/CPE, SAS Communications,
+ SAS/DMI, SAS/ETS, SAS/FSP, SAS/GRAPH, SAS/IML, SAS/IMS-DL/I, SAS/OR,
+ SAS/QC, SAS/REPLAY-CICS, SAS/RTERM, SAS/SHARE, SAS/STAT,
+ SAS Training, SAS Views, SASware Ballot, SYSTEM 2000, NeoVisuals are
+ registered trademarks of SAS Institute Inc., Cary, NC, USA.
+
+ SAS/CONNECT, SAS/CX, SAS/DB2, SAS/SQL-DS, CREATE, JMP, Multi-User,
+ MultiVendor Architecture, MVA, QueX, Screen Writer are trademarks
+ of SAS Institute Inc.
+
+ A footnote must accompany the first use of each Institute registered
+ trademark or trademark and must state that the referenced trademark
+ is used to identify products or services of SAS Institute Inc.
+
+ The Institute is a private company devoted to the support and
+ further development of its software and related services.

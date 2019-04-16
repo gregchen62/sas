@@ -1,0 +1,167 @@
+Frequently Asked Questions about COB2SAS
+
+
+What does COB2SAS do?
+
+   COB2SAS is a tool that can be used to convert a COBOL FILE
+   DESCRIPTOR SECTION into a SAS INPUT and LABEL statement. It reads
+   as it's input your COBOL COPYBOOK. It produces a SAS INPUT
+   statement and a SAS LABEL statement. The LABEL statement
+   associates data names with the SAS variable names. It also
+   produces a SAS data library that contains all of the information
+   that it gathered about the copybook.
+
+
+What is the most current release of COB2SAS?
+
+   The most current release is Release 2, which was made available
+   in July of 1990; however, there has been one fix to COB2SAS since
+   then. The fix is in the R2COB2 file. The new R2COB2 file is
+   incorporated into the zipped COB2SAS downloadable file on the SAS
+   ftp site and on the SAS Web site. If you want only the changed
+   R2COB2 member, then you can download it from
+   http://www.sas.com/techsup/download/mvs/cob2sas. For more
+   information about Release 2 of COB2SAS see the Release Notes.
+
+   This download contains additional modifications to COB2SAS are
+   that add support for long variable names. This is not considered
+   a new release.
+
+
+How do I get COB2SAS?
+
+   If you're reading this, then you've already got COB2SAS with
+   the V8 modifications. If you want COB2SAS for V6, then it's
+   available in downloadable form on the SAS web site. In order
+   to install it, you will need installation instructions. These
+   can be obtained in Technical Support Document TS-536.
+   (http://ftp.sas.com/techsup/download/technote/ts536.html) This
+   document contains links to the download locations.
+
+
+Is there any documentation for COB2SAS?
+
+   Yes!  The documentation is online. COB2SAS comes with a number of
+   files. Many of them contain documentation. The following are a
+   list of the files and the documentation they contain:
+
+      R2USGD - Usage Guide
+      R2RFRN - Reference Guide
+      R2RNTS - Release Notes
+      R2NSTL - OLD Installation Guide
+      DSCLMR - Disclaimer
+      README - README for the V8 support modifications
+      RDMEMVS - README file for MVS installations
+      RDMECMS - README file for CMS installations
+      RDMEWIN - README file for Windows installations
+      RDMEUNX - README file for Unix installations
+
+
+Why isn't COB2SAS expanding my OCCURS clauses?
+
+   By default COB2SAS doesn't expand OCCURS clauses. If you want
+   COB2SAS to expand occurs clauses, you must edit your R2MVS,
+   R2CMS, R2WIN, or R2UNX member (depending on which operating
+   system you are using). Locate the line of code that includes the
+   R2COB5 program. By default this line is commented out. Uncomment
+   the line, save the program, and COB2SAS will expand your OCCURS
+   clauses.
+
+   Note that COB2SAS will not expand nested OCCURS clauses. COB2SAS
+   will also assume the upper bound when it encounters an OCCURS
+   DEPENDING ON clause.
+
+
+Why am I getting 'INVALID DATA' messages when using the INPUT
+statement that COB2SAS generated?
+
+   This could be happening for any of the following reasons:
+
+   o The column positioning in the INPUT statement may not be
+     correct.  This frequently happens when COB2SAS encounters
+     something in the copybook that it is unable to handle. See the
+     next FAQ for a list of things that COB2SAS can not handle.
+     Locate the offending statement in your copybook. If it is
+     possible, you may be able to use a COBOL comment in your
+     copybook to comment out the statements that COB2SAS can't
+     handle, then rerun COB2SAS.  COB2SAS ignores lines in your
+     copybook that are commented out. If it is not possible to
+     comment the offending code, then you'll have to manually
+     translate your copybook.
+
+   o Your column positioning in the INPUT statement may be off
+     because COB2SAS did not expand the OCCURS clauses if you have
+     one in your copybook. See the previous FAQ for information
+     about this situation.
+
+   o Your column positioning in the INPUT statement may be off if
+     your copybook contained an OCCURS DEPENDING ON clause. COB2SAS
+     always assumes the upper bound when it encounters this clause.
+     If this is he case, you'll have to code logic to read in the
+     DEPENDING ON variable, leave a trailing @ in the INPUT
+     statement, then set up a DO loop (using the DEPENDING ON
+     variable as the do loop upper bound) reading in each
+     occurrence.
+
+   o HIGH-VALUES or LOW-VALUES may be in your copybook. SAS doesn't
+     have the concept of low or high values. This should be easy to
+     detect by looking in the hex dump in your SASLOG of the record
+     being read. If you do have high or low values in your data, one
+     approach would be to read the field in as character and test
+     for '00'x and 'FF'x. If it's not, then use the INPUT function
+     to convert it to the appropriate numeric.  Another approach
+     would be to use the ??  modifier on your INPUT statement so
+     that the 'INVALID DATA' messages aren't generated.
+
+
+What are the things that COB2SAS can not handle?
+
+   o Nested REDEFINES groups. This is one of the caveats
+     documented in the Usage Guide. If your copybook contains
+     one, the only way around it is to comment out the innermost
+     redefines clause. If that's not possible, you'll just have
+     to manually translate the copybook.
+
+   o Nested OCCURS clauses. This is also one of the caveats
+     documented in the Usage Guide. Unfortunately, there is no
+     circumvention for this situation. You will have to manually
+     translate the copybook.  Group variables within a redefined
+     block. When COB2SAS encounters one of these, it thinks it
+     has encountered the end of the group. The column
+     positioning from that point on will be incorrect. Since
+     COB2SAS ignores group variables anyway, you can comment out
+     the group variable to circumvent.
+
+   o Data names that start with a numeric. When COB2SAS
+     encounters one of these, it thinks that another level has
+     been encountered. Everything from that point on will be
+     incorrect. To circumvent, insert a character before the
+     variable name so that it no longer begins with a numeric.
+     VALUE clauses that extent into multiple lines. COB2SAS
+     ignores VALUE clauses anyway. To circumvent, either comment
+     out or delete the VALUE clause.
+
+   o The use of '.' for the decimal place in a picture clause
+     instead of the V. To COB2SAS, a '.' means the sentence has
+     ended. When you use one in a picture clause, it causes
+     problems. To circumvent, replace the '.' with a V in your
+     picture clause.
+
+
+Why am I getting the following error when I run COB2SAS:
+   ERROR: The POINT= data set option is not valid for the data set
+   WORK.DICTNRY, the data set must be accessible by observation
+   number for POINT= processing.
+
+   You're getting this error because you have the COMPRESS=YES
+   system option set. COB2SAS uses the SET statement with the
+   POINT= option. You can not use POINT= on a compressed data
+   set. To circumvent specify COMPRESS=NO.
+
+
+Why am I not getting the filler variables or group variables in
+the INPUT statement?
+
+   Fillers are just that - fillers. Your COBOL program isn't
+   using them, so COB2SAS ignores them. SAS doesn't have the
+   group variable construct so COB2SAS ignores them too.

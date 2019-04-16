@@ -1,0 +1,26 @@
+TITLE:      SAS informats that correspond to COBOL data descriptions
+
+
+ When asked which SAS informat corresponds to a COBOL data description,
+ ask for the PICTURE and USAGE. (If the USAGE is COMP-1 or COMP-2, then
+ there is no PICTURE.) Use the following to make the conversion:
+
+    Pictures that have either A or X in them represent character values
+    Pictures that represent numbers use 9 to represent digits and may
+    use an S to mean signed and a V to show the location of an implied
+    decimal point.
+
+ The number of characters or digits is specified either by the number
+ of A's, X's, or 9's in the picture or by the number in parentheses
+ immediately after the A, X, or 9  (ex. AAAA is the same as A(4)).
+
+ USAGE      PICTURE           INFORMAT   width                 decimal
+ -----      -------           --------   -----                 -------
+ COMP-1     NONE              RB4.
+ COMP-2     NONE              RB8.
+ DISPLAY    9(int)V9(fract)   ZD         (int + fract)         (fract)
+ COMP-3     9(int)V9(fract)   PD    CEIL((int + fract + 1)/2)  (fract)
+ COMP       9(int)V9(fract)   IB           see following table
+    If  1 <= (int + fract) <=  4, width is 2 and decimal is fract.
+    If  5 <= (int + fract) <=  9, width is 4 and decimal is fract.
+    If 10 <= (int + fract) <= 18, width is 8 and decimal is fract.

@@ -1,0 +1,372 @@
+ -------------------------- FILENAME=PAYMENT-FILE --------------------------
+
+      N                                                          R
+      S  N                         P                          O  D
+      T  E                         I                    A     C  F
+   L  _  W                    U    C            I       T   B R  _
+   E  D  N                    S    T            N       B   Y _  N
+   V  P  A                    A    U            F       Y   T V  A
+   E  T  M                    G    R            M       T   E A  M
+   L  H  E                    E    E            T       E   S L  E
+
+   01 01 PAYMENT-RECORD    GROUP                        1 257
+   05 02 ACCOUNTS          GROUP                        1 201
+   10 03 MONTHLY-PAYMENT   COMP-3  9(6)V9(2) PD5.2      1  60 12
+   10 03 CUSTOMER-INFO     GROUP                       61 141
+   15 04 NAME              GROUP                       61  61
+   20 05 FIRST             DISPLAY X(30)     $CHAR30.  61  30
+   20 05 MI                DISPLAY X(1)      $CHAR1.   91   1
+   20 05 LAST              DISPLAY X(30)     $CHAR30.  92  30
+   15 04 ADDRESS           DISPLAY X(80)     $CHAR80. 122  80
+   05 02 LEDGER            GROUP                      202  56
+   07 03 BALANCE-INFO      GROUP                      202  56 4
+   10 04 RCVBLE            GROUP                      202  14
+   15 05 LAST-AMOUNT-PAID  COMP-3  9(4)V9(2) PD4.2    202   4
+   15 05 PAYMENT-DATE      DISPLAY X(6)      $CHAR6.  206   6
+   15 05 REMAINING-BALANCE COMP-3  9(4)V9(2) PD4.2    212   4
+
+
+ --------------------------- FILENAME=USAGE-FILE ---------------------------
+
+         N                                                       R
+         S      N                   P                        O   D
+         T      E                   I                A       C   F
+    L    _      W     U             C         I      T   B   R   _
+    E    D      N     S             T         N      B   Y   _   N
+    V    P      A     A             U         F      Y   T   V   A
+    E    T      M     G             R         M      T   E   A   M
+    L    H      E     E             E         T      E   S   L   E
+
+    01   01   USG-A   COMP-3    9(1)V9(0)   PD1.0    1   1
+    05   02   USG-B   DISPLAY   9(1)V9(0)   ZD1.0    2   1
+    10   03   USG-C   COMP      9(1)V9(0)   IB2.0    3   2
+    20   04   USG-D   COMP-1    9(1)V9(0)   RB4.     5   4
+    25   05   USG-E   COMP-2    9(1)V9(0)   RB8.     9   8
+    10   03   USG-F   DISPLAY   9(1)V9(0)   ZD1.0   17   1
+    05   02   USG-G   COMP-3    9(1)V9(0)   PD1.0   18   1
+1                              The SAS System                              2
+                                              13:55 Thursday, April 20, 2000
+
+ --------------------------- FILENAME=SALES-FILE ---------------------------
+
+       N                                                         R
+       S  N                        P                           O D
+       T  E                        I                     A     C F
+    L  _  W                U       C          I          T   B R _
+    E  D  N                S       T          N          B   Y _ N
+    V  P  A                A       U          F          Y   T V A
+    E  T  M                G       R          M          T   E A M
+    L  H  E                E       E          T          E   S L E
+
+    01 01 SALES-RECORD1    GROUP                         1 187
+    03 02 X5-X5            DISPLAY X(5)       $CHAR5.    1   5
+    03 02 XXXXX-XXXXX      DISPLAY X(5)       $CHAR5.    6   5
+    03 02 DEPT-IN123456789 DISPLAY X(3)       $CHAR3.   11   3
+    03 02 PROD-IN1         DISPLAY 9(18)V9(0) ZD18.0    14  18
+    03 02 PROD-IN11        DISPLAY 9(18)V9(0) ZD18.0    32  18
+    03 02 PROD-IN111       DISPLAY 9(9)V9(8)  ZD17.8    50  17
+    03 02 PROD-IN22        DISPLAY 9(18)V9(0) ZDB18.0   67  18
+    03 02 PROD-IN222       DISPLAY 9(9)V9(8)  ZDB17.8   85  17
+    03 02 PROD-IN2         DISPLAY 9(4)V9(0)  ZD4.0    102   4
+    03 02 DESCRIPT-IN3     DISPLAY X(20)      $CHAR20. 106  20
+    03 02 QTY-IN4          DISPLAY 9(3)V9(0)  ZD3.0    126   3
+    03 02 SALES-IN4-A      DISPLAY 9(5)V9(5)  ZD10.5   129  10
+    03 02 SALES-IN5        COMP    9(3)V9(0)  IB2.0    139   2
+    03 02 SALES-IN5-A      COMP    9(5)V9(0)  IB4.0    141   4
+    03 02 SALES-IN5-B      COMP    9(10)V9(0) IB8.0    145   8
+    03 02 SALES-IN5-C      COMP    9(5)V9(5)  IB8.5    153   8
+    03 02 SALES-IN6        COMP-1             RB4.     161   4
+    03 02 SALES-IN7        COMP-2             RB8.     165   8
+    03 02 SALES-IN8        COMP-3  9(5)V9(5)  PD6.5    173   6
+    03 02 SALES-IN9        COMP-4  9(5)V9(5)  IB8.5    179   8
+    03 02 DDTA             DISPLAY X(1)       $CHAR1.  187   1
+
+
+ ----------------------------- FILENAME=REDEF1 -----------------------------
+
+      N                                                             R
+      S    N                           P                        O   D
+      T    E                           I               A        C   F
+ L    _    W                U          C         I     T    B   R   _
+ E    D    N                S          T         N     B    Y   _   N
+ V    P    A                A          U         F     Y    T   V   A
+ E    T    M                G          R         M     T    E   A   M
+ L    H    E                E          E         T     E    S   L   E
+
+ 01   01   REDEF1-TEST   GROUP                         1   28
+ 05   02   RDF1-A        DISPLAY   9(2)V9(2)   ZD4.2   1    4
+ 05   02   RDF1-B        DISPLAY   9(4)V9(0)   ZD4.0   1    4       RDF1-A
+ 05   02   RDF1-C        GROUP                         5    4
+ 10   03   RDF1-D        DISPLAY   9(1)V9(1)   ZD2.1   5    2
+ 10   03   RDF1-E        DISPLAY   9(1)V9(1)   ZD2.1   7    2
+ 05   02   RDF1-F        GROUP                         5    4       RDF1-C
+ 10   03   RDF1-G        DISPLAY   9(2)V9(0)   ZD2.0   5    2
+ 10   03   RDF1-H        DISPLAY   9(2)V9(0)   ZD2.0   7    2
+ 05   02   RDF1-I        DISPLAY   9(2)V9(2)   ZD4.2   9    4
+ 05   02   RDF1-J        GROUP                         9    4       RDF1-I
+1                              The SAS System                              3
+                                              13:55 Thursday, April 20, 2000
+
+ ----------------------------- FILENAME=REDEF1 -----------------------------
+                                 (continued)
+
+        N                                                        R
+        S   N                            P                    O  D
+        T   E                            I              A     C  F
+    L   _   W                  U         C        I     T  B  R  _
+    E   D   N                  S         T        N     B  Y  _  N
+    V   P   A                  A         U        F     Y  T  V  A
+    E   T   M                  G         R        M     T  E  A  M
+    L   H   E                  E         E        T     E  S  L  E
+
+    10  03  RDF1-K          DISPLAY  9(2)V9(0)  ZD2.0   9  2
+    10  03  RDF1-L          DISPLAY  9(2)V9(0)  ZD2.0  11  2
+    05  02  RDF1-M          GROUP                      13  4
+    10  03  RDF1-N          DISPLAY  9(2)V9(0)  ZD2.0  13  2
+    10  03  RDF1-O          DISPLAY  9(2)V9(0)  ZD2.0  15  2
+    05  02  RDF1-P          DISPLAY  9(2)V9(2)  ZD4.2  13  4     RDF1-M
+    05  02  RDF1-LAST-ITEM  COMP-1              RB4.   17  4
+    05  02  RDF1-LAST-ITEM  COMP-2              RB8.   21  8
+
+
+ ----------------------------- FILENAME=REDEF2 -----------------------------
+
+       N                                                         R
+       S   N                            P                     O  D
+       T   E                            I              A      C  F
+   L   _   W               U            C        I     T   B  R  _
+   E   D   N               S            T        N     B   Y  _  N
+   V   P   A               A            U        F     Y   T  V  A
+   E   T   M               G            R        M     T   E  A  M
+   L   H   E               E            E        T     E   S  L  E
+
+   01  01  REDEF1-TEST     GROUP                       1  20
+   05  02  RDF2-A          DISPLAY  9(2)V9(2)  ZD4.2   1   4
+   05  02  RDF2-B          DISPLAY  9(2)V9(0)  ZD2.0   1   2     RDF2-A
+   05  02  RDF2-C          GROUP                       5   4
+   10  03  RDF2-D          DISPLAY  9(1)V9(1)  ZD2.1   5   2
+   10  03  RDF2-E          DISPLAY  9(1)V9(1)  ZD2.1   7   2
+   05  02  RDF2-F          GROUP                       5   2     RDF2-C
+   10  03  RDF2-G          DISPLAY  9(1)V9(0)  ZD1.0   5   1
+   10  03  RDF2-H          DISPLAY  9(1)V9(0)  ZD1.0   6   1
+   05  02  RDF2-I          DISPLAY  9(2)V9(2)  ZD4.2   9   4
+   05  02  RDF2-J          GROUP                       9   2     RDF2-I
+   10  03  RDF2-K          DISPLAY  9(1)V9(0)  ZD1.0   9   1
+   10  03  RDF2-L          DISPLAY  9(1)V9(0)  ZD1.0  10   1
+   05  02  RDF2-M          GROUP                      13   4
+   10  03  RDF2-N          DISPLAY  9(2)V9(0)  ZD2.0  13   2
+   10  03  RDF2-O          DISPLAY  9(2)V9(0)  ZD2.0  15   2
+   05  02  RDF2-P          DISPLAY  9(1)V9(1)  ZD2.1  13   2     RDF2-M
+   05  02  RDF2-LAST-ITEM  COMP     9(2)V9(0)  IB2.0  17   2
+   05  02  RDF2-LAST-ITEM  COMP-4   9(2)V9(0)  IB2.0  19   2
+1                              The SAS System                              4
+                                              13:55 Thursday, April 20, 2000
+
+ ---------------------------- FILENAME=MULTRDF1 ----------------------------
+
+        N                                                       R
+        S   N                          P                     O  D
+        T   E                          I              A      C  F
+    L   _   W             U            C        I     T   B  R  _
+    E   D   N             S            T        N     B   Y  _  N
+    V   P   A             A            U        F     Y   T  V  A
+    E   T   M             G            R        M     T   E  A  M
+    L   H   E             E            E        T     E   S  L  E
+
+    01  01  MULTRDF-TEST  GROUP                       1  30
+    05  02  MRDF-A        DISPLAY  9(2)V9(2)  ZD4.2   1   4
+    05  02  MRDF-B        GROUP                       1   2     MRDF-A
+    10  03  MRDF-C        DISPLAY  9(1)V9(0)  ZD1.0   1   1
+    10  03  MRDF-D        DISPLAY  9(1)V9(0)  ZD1.0   2   1
+    05  02  MRDF-E        DISPLAY  9(2)V9(0)  ZD2.0   1   2     MRDF-A
+    05  02  MRDF-F        GROUP                       5  16  2
+    10  03  MRDF-G        COMP-3   9(4)V9(2)  PD4.2   5   4
+    10  03  MRDF-H        COMP-3   9(3)V9(3)  PD4.3   9   4
+    05  02  MRDF-I        DISPLAY  9(2)V9(2)  ZD4.2  21   4
+    05  02  MRDF-J        DISPLAY  9(2)V9(0)  ZD2.0  21   2     MRDF-I
+    05  02  MRDF-K        GROUP                      21   2     MRDF-I
+    10  03  MRDF-L        DISPLAY  9(1)V9(0)  ZD1.0  21   1
+    10  03  MRDF-M        DISPLAY  9(1)V9(0)  ZD1.0  22   1
+    05  02  MRDF-N        COMP     9(4)V9(0)  IB2.0  25   2
+    05  02  MRDF-O        COMP-1              RB4.   27   4
+
+
+ ---------------------------- FILENAME=IMP-RDF -----------------------------
+
+       N                                                          R
+       S   N                             P                     O  D
+       T   E                             I              A      C  F
+   L   _   W                   U         C        I     T   B  R  _
+   E   D   N                   S         T        N     B   Y  _  N
+   V   P   A                   A         U        F     Y   T  V  A
+   E   T   M                   G         R        M     T   E  A  M
+   L   H   E                   E         E        T     E   S  L  E
+
+   01  01  IMPRDF-RECORD1   GROUP                       1  16
+   05  02  IMPRDF-A1        DISPLAY  9(4)V9(0)  ZD4.0   1   4
+   05  02  IMPRDF-B1        GROUP                       5   4
+   10  03  IMPRDF-C1        DISPLAY  9(2)V9(0)  ZD2.0   5   2
+   10  03  IMPRDF-D1        DISPLAY  9(2)V9(0)  ZD2.0   7   2
+   05  02  IMPRDF-E1        COMP-1              RB4.    9   4
+   05  02  IMPRDF-F1        COMP-1              RB4.   13   4
+   01  01  IMPRDF-RECORD-2  COMP-1              RB4.    1   4
+   05  02  IMPRDF-A2        COMP-1              RB4.    5   4
+   05  02  IMPRDF-B2        COMP-1              RB4.    9   4
+   05  02  IMPRDF-C2        COMP-1              RB4.   13   4
+1                              The SAS System                              5
+                                              13:55 Thursday, April 20, 2000
+
+ -------------------------- FILENAME=STUDENT-FILE --------------------------
+
+     N                                                              R
+     S   N                        P                              O  D
+     T   E                        I                      A       C  F
+ L   _   W                  U     C             I        T    B  R  _
+ E   D   N                  S     T             N        B    Y  _  N
+ V   P   A                  A     U             F        Y    T  V  A
+ E   T   M                  G     R             M        T    E  A  M
+ L   H   E                  E     E             T        E    S  L  E
+
+ 01  01  STUDENT-RECORD  GROUP                           1  158
+ 05  02  STUDENT-NUMBER  DISPLAY  X(9)       $CHAR9.     1    9
+ 05  02  FILLER          DISPLAY  X(4)       $CHAR4.    10    4
+ 05  02  LAST-NAME       DISPLAY  X(42)      $CHAR42.   14   42
+ 05  02  FIRST-NAME      DISPLAY  X(21)      $CHAR21.   56   21
+ 05  02  MI              DISPLAY  X(1)       $CHAR1.    77    1
+ 05  02  FILLER          DISPLAY  X(2)       $CHAR2.    78    2
+ 05  02  DOB             COMP-3   9(5)V9(0)  PD3.0      80    3
+ 05  02  FILLER          DISPLAY  X(2)       $CHAR2.    83    2
+ 05  02  CLASS           DISPLAY  X(2)       $CHAR2.    85    2
+ 05  02  GRAD-DATE       COMP-3   9(7)V9(0)  PD4.0      87    4
+ 05  02  FILLER          DISPLAY  X(7)       $CHAR7.    91    7
+ 05  02  Q1-CLASS1       COMP-3   9(7)V9(2)  PD5.2      98    5
+ 05  02  Q1-CLASS2       COMP-3   9(7)V9(2)  PD5.2     103    5
+ 05  02  FILLER          DISPLAY  X(7)       $CHAR7.   108    7
+ 05  02  Q2-CLASS1       COMP-3   9(7)V9(2)  PD5.2     115    5
+ 05  02  Q2-CLASS2       COMP-3   9(7)V9(2)  PD5.2     120    5
+ 05  02  FILLER          DISPLAY  X(7)       $CHAR7.   125    7
+ 05  02  Q3-CLASS1       COMP-3   9(7)V9(2)  PD5.2     132    5
+ 05  02  Q3-CLASS2       COMP-3   9(7)V9(2)  PD5.2     137    5
+ 05  02  FILLER          DISPLAY  X(7)       $CHAR7.   142    7
+ 05  02  Q4-CLASS1       COMP-3   9(7)V9(2)  PD5.2     149    5
+ 05  02  Q4-CLASS2       COMP-3   9(7)V9(2)  PD5.2     154    5
+
+
+ ----------------------- FILENAME=SORT-BY-NAME-FILE ------------------------
+
+        N                                                        R
+        S   N                          P                      O  D
+        T   E                          I               A      C  F
+    L   _   W                  U       C       I       T   B  R  _
+    E   D   N                  S       T       N       B   Y  _  N
+    V   P   A                  A       U       F       Y   T  V  A
+    E   T   M                  G       R       M       T   E  A  M
+    L   H   E                  E       E       T       E   S  L  E
+
+    01  01  STUDENT-RECORD  GROUP                      1  76
+    05  02  LAST-NAME       DISPLAY  X(42)  $CHAR42.   1  42
+    05  02  FIRST-NAME      DISPLAY  X(21)  $CHAR21.  43  21
+    05  02  FILLER          DISPLAY  X(4)   $CHAR4.   64   4
+    05  02  STUDENT-NUMBER  DISPLAY  X(9)   $CHAR9.   68   9
+1                              The SAS System                              6
+                                              13:55 Thursday, April 20, 2000
+
+ --------------------------- FILENAME=LEVEL-FILE ---------------------------
+
+        N                                                        R
+        S         N                      P                    O  D
+        T         E                      I              A     C  F
+    L   _         W         U            C        I     T  B  R  _
+    E   D         N         S            T        N     B  Y  _  N
+    V   P         A         A            U        F     Y  T  V  A
+    E   T         M         G            R        M     T  E  A  M
+    L   H         E         E            E        T     E  S  L  E
+
+    01  01  LEVEL-1-ITEM    DISPLAY  9(2)V9(0)  ZD2.0   1  2
+    07  02  LEVEL-7-ITEM    DISPLAY  9(2)V9(0)  ZD2.0   3  2
+    09  03  LEVEL-9-ITEM-A  DISPLAY  9(1)V9(0)  ZD1.0   5  9  9
+    09  03  LEVEL-9-ITEM-B  DISPLAY  9(1)V9(0)  ZD1.0  14  1
+    05  02  LEVEL-5-RECORD  COMP-2              RB8.   15  8
+    10  03  LEVEL-10-ITEM   COMP-2              RB8.   23  8
+    20  04  LEVEL-20-ITEM   COMP-2              RB8.   31  8
+    02  02  LEVEL-2-ITEM    DISPLAY  9(2)V9(0)  ZD2.0  39  2
+    04  03  LEVEL-4-ITEM    COMP-3   9(2)V9(0)  PD2.0  41  2
+    06  04  LEVEL-6-ITEM    COMP     9(2)V9(0)  IB2.0  43  2
+    03  02  LEVEL-3-ITEM    DISPLAY  9(2)V9(0)  ZD2.0  45  2
+
+
+ ---------------------- FILENAME=IMPLIED-FILLER-FILE -----------------------
+
+       N                                                        R
+       S  N                                 P                 O D
+       T  E                                 I            A    C F
+    L  _  W                        U        C       I    T  B R _
+    E  D  N                        S        T       N    B  Y _ N
+    V  P  A                        A        U       F    Y  T V A
+    E  T  M                        G        R       M    T  E A M
+    L  H  E                        E        E       T    E  S L E
+
+    01 01 IMPLIED-FILLER-RECORD GROUP                    1 17
+    05 02 FILLER                COMP-2            RB8.   1  8
+    05 02 EXPLICIT-FIELD-1      DISPLAY 9(1)V9(0) ZD1.0  9  1
+    05 02 FILLER                COMP-2            RB8.  10  8
+
+
+ ------------------------ FILENAME=VALUE-88-66-FILE ------------------------
+
+     N                                                             R
+     S            N                       P                     O  D
+     T            E                       I              A      C  F
+ L   _            W             U         C        I     T   B  R  _
+ E   D            N             S         T        N     B   Y  _  N
+ V   P            A             A         U        F     Y   T  V  A
+ E   T            M             G         R        M     T   E  A  M
+ L   H            E             E         E        T     E   S  L  E
+
+ 01  01  DURATION-IN-MINUTES  GROUP                      1  17
+ 05  02  TRF-DURATION         COMP-3  9(4)V9(3)  PD4.3   1   4
+ 05  02  TRF-QUOT-MIN         COMP-3  9(5)V9(0)  PD3.0   5   3
+ 05  02  TRF-60-SEC-RND       COMP-3  9(3)V9(0)  PD2.0   8   2
+ 05  02  TRF-30-SEC-RND       COMP-3  9(3)V9(0)  PD2.0  10   2
+1                              The SAS System                              7
+                                              13:55 Thursday, April 20, 2000
+
+ ------------------------ FILENAME=VALUE-88-66-FILE ------------------------
+                                 (continued)
+
+        N                                                       R
+        S         N                     P                    O  D
+        T         E                     I              A     C  F
+    L   _         W           U         C        I     T  B  R  _
+    E   D         N           S         T        N     B  Y  _  N
+    V   P         A           A         U        F     Y  T  V  A
+    E   T         M           G         R        M     T  E  A  M
+    L   H         E           E         E        T     E  S  L  E
+
+    05  02  TRF-12-SEC-RND  COMP-3  9(3)V9(0)  PD2.0  12  2
+    05  02  TRF-06-SEC-RND  COMP-3  9(3)V9(0)  PD2.0  14  2
+    05  02  TRF-01-SEC-RND  COMP-3  9(3)V9(0)  PD2.0  16  2
+
+
+ --------------------------- FILENAME=ANY-STYLE ----------------------------
+
+     N                                                              R
+     S   N                          P                            O  D
+     T   E                          I                     A      C  F
+ L   _   W                    U     C             I       T   B  R  _
+ E   D   N                    S     T             N       B   Y  _  N
+ V   P   A                    A     U             F       Y   T  V  A
+ E   T   M                    G     R             M       T   E  A  M
+ L   H   E                    E     E             T       E   S  L  E
+
+ 01  01  FREE-FORM-RECORD  GROUP                          1  94
+ 07  02  FREE-1            DISPLAY  9(2)V9(0)  ZD2.0      1   2
+ 32  03  FREE-2            DISPLAY  X(80)      $CHAR80.   3  80
+ 32  03  FREE-3            GROUP                         83   2
+ 35  04  FREE-4            COMP-3   9(1)V9(1)  PD2.1     83   2
+ 08  02  FREE-5            DISPLAY  9(2)V9(1)  ZD3.1     85   3
+ 09  03  FREE-6            DISPLAY  9(2)V9(2)  ZD4.2     88   4
+ 35  04  FREE-7            GROUP                         92   0
+ 35  04  FREE-8            DISPLAY  9(1)V9(0)  ZD1.0     92   1
+ 38  05  FREE-9            DISPLAY  9(1)V9(0)  ZD1.0     93   1
+ 09  03  FREE-10           DISPLAY  9(1)V9(0)  ZD1.0     94   1

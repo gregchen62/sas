@@ -1,0 +1,374 @@
+
+
+  /* INFILE PAYMENT-FILE  */
+  INPUT
+     @1          MONTHLY-PAYMENT                         PD5.2
+     @61         FIRST                                   $CHAR30.
+     @91         MI                                      $CHAR1.
+     @92         LAST                                    $CHAR30.
+     @122        ADDRESS                                 $CHAR80.
+     @202        LAST-AMOUNT-PAID                        PD4.2
+     @206        PAYMENT-DATE                            $CHAR6.
+     @212        REMAINING-BALANCE                       PD4.2
+     ;
+
+  /* INFILE USAGE-FILE  */
+  INPUT
+     @1          USG-A                                   PD1.0
+     @2          USG-B                                   ZD1.0
+     @3          USG-C                                   IB2.0
+     @5          USG-D                                   RB4.
+     @9          USG-E                                   RB8.
+     @17         USG-F                                   ZD1.0
+     @18         USG-G                                   PD1.0
+     ;
+
+  /* INFILE SALES-FILE  */
+  INPUT
+     @1          X5-X5                                   $CHAR5.
+     @6          XXXXX-XXXXX                             $CHAR5.
+     @11         DEPT-IN123456789                        $CHAR3.
+     @14         PROD-IN1                                ZD18.0
+     @32         PROD-IN11                               ZD18.0
+     @50         PROD-IN111                              ZD17.8
+     @67         PROD-IN22                               ZDB18.0
+     @85         PROD-IN222                              ZDB17.8
+     @102        PROD-IN2                                ZD4.0
+     @106        DESCRIPT-IN3                            $CHAR20.
+     @126        QTY-IN4                                 ZD3.0
+     @129        SALES-IN4-A                             ZD10.5
+     @139        SALES-IN5                               IB2.0
+     @141        SALES-IN5-A                             IB4.0
+     @145        SALES-IN5-B                             IB8.0
+     @153        SALES-IN5-C                             IB8.5
+     @161        SALES-IN6                               RB4.
+     @165        SALES-IN7                               RB8.
+     @173        SALES-IN8                               PD6.5
+     @179        SALES-IN9                               IB8.5
+     @187        DDTA                                    $CHAR1.
+     ;
+
+  /* INFILE REDEF1  */
+  INPUT
+     @1          RDF1-A                                  ZD4.2
+     @1          RDF1-B                                  ZD4.0
+     @5          RDF1-D                                  ZD2.1
+     @7          RDF1-E                                  ZD2.1
+     @5          RDF1-G                                  ZD2.0
+     @7          RDF1-H                                  ZD2.0
+     @9          RDF1-I                                  ZD4.2
+     @9          RDF1-K                                  ZD2.0
+     @11         RDF1-L                                  ZD2.0
+     @13         RDF1-N                                  ZD2.0
+     @15         RDF1-O                                  ZD2.0
+     @13         RDF1-P                                  ZD4.2
+     @17         RDF1-LAST-ITEM                          RB4.
+     @21         RDF1-LAST-ITEM                          RB8.
+     ;
+
+  /* INFILE REDEF2  */
+  INPUT
+     @1          RDF2-A                                  ZD4.2
+     @1          RDF2-B                                  ZD2.0
+     @5          RDF2-D                                  ZD2.1
+     @7          RDF2-E                                  ZD2.1
+     @5          RDF2-G                                  ZD1.0
+     @6          RDF2-H                                  ZD1.0
+     @9          RDF2-I                                  ZD4.2
+     @9          RDF2-K                                  ZD1.0
+     @10         RDF2-L                                  ZD1.0
+     @13         RDF2-N                                  ZD2.0
+     @15         RDF2-O                                  ZD2.0
+     @13         RDF2-P                                  ZD2.1
+     @17         RDF2-LAST-ITEM                          IB2.0
+     @19         RDF2-LAST-ITEM                          IB2.0
+     ;
+
+  /* INFILE MULTRDF1  */
+  INPUT
+     @1          MRDF-A                                  ZD4.2
+     @1          MRDF-C                                  ZD1.0
+     @2          MRDF-D                                  ZD1.0
+     @1          MRDF-E                                  ZD2.0
+     @5          MRDF-G                                  PD4.2
+     @9          MRDF-H                                  PD4.3
+     @21         MRDF-I                                  ZD4.2
+     @21         MRDF-J                                  ZD2.0
+     @21         MRDF-L                                  ZD1.0
+     @22         MRDF-M                                  ZD1.0
+     @25         MRDF-N                                  IB2.0
+     @27         MRDF-O                                  RB4.
+     ;
+
+  /* INFILE IMP-RDF  */
+  INPUT
+     @1          IMPRDF-A1                               ZD4.0
+     @5          IMPRDF-C1                               ZD2.0
+     @7          IMPRDF-D1                               ZD2.0
+     @9          IMPRDF-E1                               RB4.
+     @13         IMPRDF-F1                               RB4.
+     ;
+
+  /* INFILE IMP-RDF  */
+  INPUT
+     @1          IMPRDF-RECORD-2                         RB4.
+     @5          IMPRDF-A2                               RB4.
+     @9          IMPRDF-B2                               RB4.
+     @13         IMPRDF-C2                               RB4.
+     ;
+
+  /* INFILE STUDENT-FILE  */
+  INPUT
+     @1          STUDENT-NUMBER                          $CHAR9.
+     @14         LAST-NAME                               $CHAR42.
+     @56         FIRST-NAME                              $CHAR21.
+     @77         MI                                      $CHAR1.
+     @80         DOB                                     PD3.0
+     @85         CLASS                                   $CHAR2.
+     @87         GRAD-DATE                               PD4.0
+     @98         Q1-CLASS1                               PD5.2
+     @103        Q1-CLASS2                               PD5.2
+     @115        Q2-CLASS1                               PD5.2
+     @120        Q2-CLASS2                               PD5.2
+     @132        Q3-CLASS1                               PD5.2
+     @137        Q3-CLASS2                               PD5.2
+     @149        Q4-CLASS1                               PD5.2
+     @154        Q4-CLASS2                               PD5.2
+     ;
+
+  /* INFILE SORT-BY-NAME-FILE  */
+  INPUT
+     @1          LAST-NAME                               $CHAR42.
+     @43         FIRST-NAME                              $CHAR21.
+     @68         STUDENT-NUMBER                          $CHAR9.
+     ;
+
+  /* INFILE LEVEL-FILE  */
+  INPUT
+     @1          LEVEL-1-ITEM                            ZD2.0
+     @3          LEVEL-7-ITEM                            ZD2.0
+     @5          LEVEL-9-ITEM-A                          ZD1.0
+     @14         LEVEL-9-ITEM-B                          ZD1.0
+     @15         LEVEL-5-RECORD                          RB8.
+     @23         LEVEL-10-ITEM                           RB8.
+     @31         LEVEL-20-ITEM                           RB8.
+     @39         LEVEL-2-ITEM                            ZD2.0
+     @41         LEVEL-4-ITEM                            PD2.0
+     @43         LEVEL-6-ITEM                            IB2.0
+     @45         LEVEL-3-ITEM                            ZD2.0
+     ;
+
+  /* INFILE IMPLIED-FILLER-FILE  */
+  INPUT
+     @9          EXPLICIT-FIELD-1                        ZD1.0
+     ;
+
+  /* INFILE VALUE-88-66-FILE  */
+  INPUT
+     @1          TRF-DURATION                            PD4.3
+     @5          TRF-QUOT-MIN                            PD3.0
+     @8          TRF-60-SEC-RND                          PD2.0
+     @10         TRF-30-SEC-RND                          PD2.0
+     @12         TRF-12-SEC-RND                          PD2.0
+     @14         TRF-06-SEC-RND                          PD2.0
+     @16         TRF-01-SEC-RND                          PD2.0
+     ;
+
+  /* INFILE ANY-STYLE  */
+  INPUT
+     @1          FREE-1                                  ZD2.0
+     @3          FREE-2                                  $CHAR80.
+     @83         FREE-4                                  PD2.1
+     @85         FREE-5                                  ZD3.1
+     @88         FREE-6                                  ZD4.2
+     @92         FREE-8                                  ZD1.0
+     @93         FREE-9                                  ZD1.0
+     @94         FREE-10                                 ZD1.0
+     ;
+
+
+  /* LABEL PAYMENT-FILE  */
+  LABEL
+     MONTHLY-PAYMENT                        = 'MONTHLY-PAYMENT'
+     FIRST                                  = 'FIRST'
+     MI                                     = 'MI'
+     LAST                                   = 'LAST'
+     ADDRESS                                = 'ADDRESS'
+     LAST-AMOUNT-PAID                       = 'LAST-AMOUNT-PAID'
+     PAYMENT-DATE                           = 'PAYMENT-DATE'
+     REMAINING-BALANCE                      = 'REMAINING-BALANCE'
+     ;
+
+  /* LABEL USAGE-FILE  */
+  LABEL
+     USG-A                                  = 'USG-A'
+     USG-B                                  = 'USG-B'
+     USG-C                                  = 'USG-C'
+     USG-D                                  = 'USG-D'
+     USG-E                                  = 'USG-E'
+     USG-F                                  = 'USG-F'
+     USG-G                                  = 'USG-G'
+     ;
+
+  /* LABEL SALES-FILE  */
+  LABEL
+     X5-X5                                  = 'X5-X5'
+     XXXXX-XXXXX                            = 'XXXXX-XXXXX'
+     DEPT-IN123456789                       = 'DEPT-IN123456789'
+     PROD-IN1                               = 'PROD-IN1'
+     PROD-IN11                              = 'PROD-IN11'
+     PROD-IN111                             = 'PROD-IN111'
+     PROD-IN22                              = 'PROD-IN22'
+     PROD-IN222                             = 'PROD-IN222'
+     PROD-IN2                               = 'PROD-IN2'
+     DESCRIPT-IN3                           = 'DESCRIPT-IN3'
+     QTY-IN4                                = 'QTY-IN4'
+     SALES-IN4-A                            = 'SALES-IN4-A'
+     SALES-IN5                              = 'SALES-IN5'
+     SALES-IN5-A                            = 'SALES-IN5-A'
+     SALES-IN5-B                            = 'SALES-IN5-B'
+     SALES-IN5-C                            = 'SALES-IN5-C'
+     SALES-IN6                              = 'SALES-IN6'
+     SALES-IN7                              = 'SALES-IN7'
+     SALES-IN8                              = 'SALES-IN8'
+     SALES-IN9                              = 'SALES-IN9'
+     DDTA                                   = 'DDTA'
+     ;
+
+  /* LABEL REDEF1  */
+  LABEL
+     RDF1-A                                 = 'RDF1-A'
+     RDF1-B                                 = 'RDF1-B'
+     RDF1-D                                 = 'RDF1-D'
+     RDF1-E                                 = 'RDF1-E'
+     RDF1-G                                 = 'RDF1-G'
+     RDF1-H                                 = 'RDF1-H'
+     RDF1-I                                 = 'RDF1-I'
+     RDF1-K                                 = 'RDF1-K'
+     RDF1-L                                 = 'RDF1-L'
+     RDF1-N                                 = 'RDF1-N'
+     RDF1-O                                 = 'RDF1-O'
+     RDF1-P                                 = 'RDF1-P'
+     RDF1-LAST-ITEM                         = 'RDF1-LAST-ITEM'
+     RDF1-LAST-ITEM                         = 'RDF1-LAST-ITEM'
+     ;
+
+  /* LABEL REDEF2  */
+  LABEL
+     RDF2-A                                 = 'RDF2-A'
+     RDF2-B                                 = 'RDF2-B'
+     RDF2-D                                 = 'RDF2-D'
+     RDF2-E                                 = 'RDF2-E'
+     RDF2-G                                 = 'RDF2-G'
+     RDF2-H                                 = 'RDF2-H'
+     RDF2-I                                 = 'RDF2-I'
+     RDF2-K                                 = 'RDF2-K'
+     RDF2-L                                 = 'RDF2-L'
+     RDF2-N                                 = 'RDF2-N'
+     RDF2-O                                 = 'RDF2-O'
+     RDF2-P                                 = 'RDF2-P'
+     RDF2-LAST-ITEM                         = 'RDF2-LAST-ITEM'
+     RDF2-LAST-ITEM                         = 'RDF2-LAST-ITEM'
+     ;
+
+  /* LABEL MULTRDF1  */
+  LABEL
+     MRDF-A                                 = 'MRDF-A'
+     MRDF-C                                 = 'MRDF-C'
+     MRDF-D                                 = 'MRDF-D'
+     MRDF-E                                 = 'MRDF-E'
+     MRDF-G                                 = 'MRDF-G'
+     MRDF-H                                 = 'MRDF-H'
+     MRDF-I                                 = 'MRDF-I'
+     MRDF-J                                 = 'MRDF-J'
+     MRDF-L                                 = 'MRDF-L'
+     MRDF-M                                 = 'MRDF-M'
+     MRDF-N                                 = 'MRDF-N'
+     MRDF-O                                 = 'MRDF-O'
+     ;
+
+  /* LABEL IMP-RDF  */
+  LABEL
+     IMPRDF-A1                              = 'IMPRDF-A1'
+     IMPRDF-C1                              = 'IMPRDF-C1'
+     IMPRDF-D1                              = 'IMPRDF-D1'
+     IMPRDF-E1                              = 'IMPRDF-E1'
+     IMPRDF-F1                              = 'IMPRDF-F1'
+     ;
+
+  /* LABEL IMP-RDF  */
+  LABEL
+     IMPRDF-RECORD-2                        = 'IMPRDF-RECORD-2'
+     IMPRDF-A2                              = 'IMPRDF-A2'
+     IMPRDF-B2                              = 'IMPRDF-B2'
+     IMPRDF-C2                              = 'IMPRDF-C2'
+     ;
+
+  /* LABEL STUDENT-FILE  */
+  LABEL
+     STUDENT-NUMBER                         = 'STUDENT-NUMBER'
+     LAST-NAME                              = 'LAST-NAME'
+     FIRST-NAME                             = 'FIRST-NAME'
+     MI                                     = 'MI'
+     DOB                                    = 'DOB'
+     CLASS                                  = 'CLASS'
+     GRAD-DATE                              = 'GRAD-DATE'
+     Q1-CLASS1                              = 'Q1-CLASS1'
+     Q1-CLASS2                              = 'Q1-CLASS2'
+     Q2-CLASS1                              = 'Q2-CLASS1'
+     Q2-CLASS2                              = 'Q2-CLASS2'
+     Q3-CLASS1                              = 'Q3-CLASS1'
+     Q3-CLASS2                              = 'Q3-CLASS2'
+     Q4-CLASS1                              = 'Q4-CLASS1'
+     Q4-CLASS2                              = 'Q4-CLASS2'
+     ;
+
+  /* LABEL SORT-BY-NAME-FILE  */
+  LABEL
+     LAST-NAME                              = 'LAST-NAME'
+     FIRST-NAME                             = 'FIRST-NAME'
+     STUDENT-NUMBER                         = 'STUDENT-NUMBER'
+     ;
+
+  /* LABEL LEVEL-FILE  */
+  LABEL
+     LEVEL-1-ITEM                           = 'LEVEL-1-ITEM'
+     LEVEL-7-ITEM                           = 'LEVEL-7-ITEM'
+     LEVEL-9-ITEM-A                         = 'LEVEL-9-ITEM-A'
+     LEVEL-9-ITEM-B                         = 'LEVEL-9-ITEM-B'
+     LEVEL-5-RECORD                         = 'LEVEL-5-RECORD'
+     LEVEL-10-ITEM                          = 'LEVEL-10-ITEM'
+     LEVEL-20-ITEM                          = 'LEVEL-20-ITEM'
+     LEVEL-2-ITEM                           = 'LEVEL-2-ITEM'
+     LEVEL-4-ITEM                           = 'LEVEL-4-ITEM'
+     LEVEL-6-ITEM                           = 'LEVEL-6-ITEM'
+     LEVEL-3-ITEM                           = 'LEVEL-3-ITEM'
+     ;
+
+  /* LABEL IMPLIED-FILLER-FILE  */
+  LABEL
+     EXPLICIT-FIELD-1                       = 'EXPLICIT-FIELD-1'
+     ;
+
+  /* LABEL VALUE-88-66-FILE  */
+  LABEL
+     TRF-DURATION                           = 'TRF-DURATION'
+     TRF-QUOT-MIN                           = 'TRF-QUOT-MIN'
+     TRF-60-SEC-RND                         = 'TRF-60-SEC-RND'
+     TRF-30-SEC-RND                         = 'TRF-30-SEC-RND'
+     TRF-12-SEC-RND                         = 'TRF-12-SEC-RND'
+     TRF-06-SEC-RND                         = 'TRF-06-SEC-RND'
+     TRF-01-SEC-RND                         = 'TRF-01-SEC-RND'
+     ;
+
+  /* LABEL ANY-STYLE  */
+  LABEL
+     FREE-1                                 = 'FREE-1'
+     FREE-2                                 = 'FREE-2'
+     FREE-4                                 = 'FREE-4'
+     FREE-5                                 = 'FREE-5'
+     FREE-6                                 = 'FREE-6'
+     FREE-8                                 = 'FREE-8'
+     FREE-9                                 = 'FREE-9'
+     FREE-10                                = 'FREE-10'
+     ;

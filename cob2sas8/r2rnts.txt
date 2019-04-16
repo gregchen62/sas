@@ -1,0 +1,57 @@
+
+ *** COB2SAS, Release 2 Release Notes
+
+
+
+ ***  Purpose of COB2SAS, Release 2
+
+
+ COB2SAS, Release 2 is a tool that can assist you in converting COBOL
+ language data description entries into equivalent SAS(R) language
+ statements.
+
+
+ *** Overview of COB2SAS, Release 2
+
+
+ COB2SAS, Release 2 uses the information in the data description
+ entries of COBOL language programs to create a data dictionary.
+ Succeeding steps use this data dictionary to create SAS language
+ statements equivalent to the data descriptions entries.
+
+
+ *** Highlights of COB2SAS, Release 2
+
+
+ * It processes COBOL data description entries appearing in either
+   complete programs or in copy members.
+
+ * It is able to process several COBOL programs in a single
+   execution.
+
+ * It employs a parsing algorithm that is based upon the definition
+   of COBOL in ANSI specification X3.23-1985.
+
+ * It creates a data dictionary which is similar to the ones created
+   when compiling with various MAP options of the COBOL compiler.
+
+ * It is designed to allow you to create your own programs that
+   reconcile differing conventions between the COBOL and SAS
+   languages.
+
+ * Included with COB2SAS, Release 2 is a sample program that
+   compresses the lengths of variable names to no more than 8
+   characters.
+
+ * It is written in the SAS language.
+
+ * It executes under Version 5 and Version 6 of the SAS System under
+   CMS, MVS, VMS(TM) and VSE.
+
+
+
+
+
+ SAS is a registered trademark of SAS Institute Inc., Cary, NC, USA
+
+ VMS is a trademark of Digital Equipment Corporation.

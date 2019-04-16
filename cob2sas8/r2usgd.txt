@@ -1,0 +1,1159 @@
+
+ *** COB2SAS, Release 2 Usage Guide
+
+
+
+ Files in which the programs are stored:
+
+     R2CMS   ........ Invokes COB2SAS on CMS.
+     R2MVS   ........ Invokes COB2SAS on MVS.
+     R2VMS   ........ Invokes COB2SAS on VMS(TM).
+     R2VSE   ........ Invokes COB2SAS on VSE.
+
+     R2COB1  ........ Creates formats used for parsing.
+     R2COB2  ........ Parses COBOL data description entries.
+                      Creates the data dictionary.
+                      Creates the group data set.
+     R2COB3  ........ Updates the data dictionary with the
+                      information in the group data set.
+     R2COB4  ........ Compresses COBOL data names to no
+                      more than 8 characters.
+     R2COB5  ........ Expands OCCURS variables.
+     R2COB6  ........ Uses the information in the data dictionary
+                      to produce SAS(R) language input statements.
+     R2COB7  ........ Uses the information in the data dictionary
+                      to produce SAS language label statements.
+
+
+
+ Files in which the documentation is stored:
+
+     R2NSTL  ........ COB2SAS, Release 2 Installation Guide
+     R2RFRN  ........ COB2SAS, Release 2 Reference
+     R2RNTS  ........ COB2SAS, Release 2 Release Notes
+     R2USGD  ........ COB2SAS, Release 2 Usage Guide
+     COPYRIT ........ COPYRIGHT Notice
+     DSCLMR  ........ DISCLAIMER
+     TDMK    ........ TRADEMARK Notice
+
+
+
+ Files in which test data and their results are stored:
+
+     CP1     ........ COBOL Program 1
+     CP1LOG  ........ Log of an execution on COBOL Program 1.
+     CP1LST  ........ Listing of an execution on COBOL Program 1.
+
+
+
+
+
+
+
+
+
+
+ --------------------------------------------------------------------
+ VMS is a trademark of Digital Equipment Corporation.
+
+
+ ***  Purpose of COB2SAS, Release 2
+
+
+ COB2SAS, Release 2 is a tool that can assist you in converting
+ COBOL language  data description entries  into equivalent SAS
+ language statements.
+
+
+ *** Overview of COB2SAS, Release 2
+
+
+ COB2SAS, Release 2 uses the information in the data description
+ entries of COBOL language programs to create a data dictionary.
+ Succeeding steps use this data dictionary to create SAS language
+ statements equivalent to the data descriptions entries.
+
+
+ *** Highlights of COB2SAS, Release 2
+
+
+ * It processes COBOL data description entries appearing in either
+   complete programs or in copy members.
+
+ * It is able to process several COBOL programs in a single
+   execution.
+
+ * It employs a parsing algorithm that is based upon the definition
+   of COBOL in ANSI specification X3.23-1985.
+
+ * It creates a data dictionary which is similar to the ones created
+   when compiling with various MAP options of the COBOL compiler.
+
+ * It is designed to allow you to create your own programs that
+   reconcile differing conventions between the COBOL and SAS
+   languages.
+
+ * Included with COB2SAS, Release 2 is a sample program that
+   compresses the lengths of variable names to no more than 8
+   characters.
+
+ * It is written in the SAS language.
+
+ * It executes under Version 5 and Version 6 of the SAS System under
+   CMS, MVS, VMS and VSE.
+
+
+
+
+
+
+
+
+
+
+
+ COB2SAS, Release 2 Usage Guide                          Page  1
+
+
+ * The programs that invoke COB2SAS, Release 2
+
+ Included in COB2SAS, Release 2 are 4 programs, one for each
+ operating system for which COB2SAS is distributed, that invoke
+ COB2SAS. These 4 programs differ in the conventions used to invoke
+ R2COB1 through R2COB7 and in the conventions used to reference
+ files.
+
+ - R2CMS is used to invoke R2COB1 through R2COB7 on CMS.
+
+ - R2MVS is used to invoke R2COB1 through R2COB7 on MVS.
+
+ - R2VMS is used to invoke R2COB1 through R2COB7 on VMS.
+
+ - R2VSE is used to invoke R2COB1 through R2COB7 on VSE.
+
+ Any special requirements for the INFILE and FILE statements are
+ provided in these programs. Also, in these programs, you can provide
+ statements that will direct the data dictionary to a permanent SAS
+ data set and the SAS language statements to a flat file.
+
+
+ * Differences between CMS, MVS, VMS and VSE
+
+ - INFILE & FILE statements
+
+    Under CMS and MVS, there is no need to specify DCB information
+    on the INFILE and FILE statements.
+
+    Under VSE, it necessary to provide complete and explicit DCB
+    information (that is, RECFM, LRECL and BLKSIZE).
+
+    Under VMS, it necessary to explicitly provide RECFM=F LRECL=80
+    so that the SAS System will treat the file as if it has fixed
+    length records.
+
+ - Conventions for including code for execution
+
+   Code is included for execution from a MACLIB under CMS.
+
+   Code is included for execution from a PDS under MVS.
+
+   Code is included for execution from a sublibrary under VSE.
+
+   Code is included for execution from a directory under VMS.
+
+ - Appending to sequential files
+
+   CMS, MVS and VMS allow specification of the MOD disposition.
+   This mechanism allows programs to append output to existing
+   sequential files.
+
+   VSE provides no mechanism for appending output to existing
+   sequential files.
+
+ COB2SAS, Release 2 Usage Guide                          Page  2
+
+
+ * R2COB1 through R2COB7
+
+ The programs that convert COBOL language data description entries
+ into SAS language statements are stored in 7 files.
+
+ - R2COB1 uses PROC FORMAT to create formats that are used while
+   parsing COBOL language data description entries.
+
+
+ - R2COB2 uses a data step to parse the data description entries
+   and produce 2 SAS data sets. The first data set contains an
+   observation for each data description entry. The second data
+   set has information about the lengths of groups of data items.
+
+
+ - R2COB3 uses PROC SORT and a data step to combine the group data
+   set and the data dictionary data set.
+
+
+ - R2COB4 uses PROC SORT and the data step to compress the lengths
+   of variable names to no more than 8 characters.
+
+
+ - R2COB5 is an optional step that uses the data step and PROC SORT
+   to expand 1 dimensional tables.
+
+    * R2COB5 is designed to:
+      => expand items that occur no more than 999 times
+      => expand 1 dimensional tables
+
+      In the event that either of these limits is exceeded, it will
+      generate an appropriate error message.
+
+    * By default, the statement that includes R2COB5 is commented
+      out. If you want to use R2COB5, you will need to acquire a
+      copy of the program that invokes COB2SAS on your operating
+      system (for example, R2MVS on MVS) and uncomment the line
+      that includes R2COB5 for execution.
+
+
+ - R2COB6 uses the data step to produce SAS INPUT statements.
+
+
+ - R2COB7 uses the data step to produce SAS LABEL statements.
+
+
+ Regardless of the operating system, the contents of R2COB1 through
+ R2COB7 are identical.
+
+
+
+
+
+
+
+ COB2SAS, Release 2 Usage Guide                          Page  3
+
+
+ * COB2SAS Usage Notes
+
+    If you you are not getting proper output, or any output at all,
+ the first thing to look at is your source program. In order for
+ COB2SAS to work, the file that it is reading should be in a form
+ that the COBOL compiler can use. COB2SAS does no checking for syntax
+ errors in the COBOL language statements. Furthermore, COB2SAS makes
+ the following assumptions about the data description entries that it
+ will read.
+
+
+ Assumptions regarding the location of entries within margins
+
+    (1) The contents of columns 1 through 6 are ignored.
+
+    (2) Any character in column 7, other than a blank or a hyphen,
+        causes the entire line to be ignored.
+
+    (3) The level indicators CD, FD, RD, SD, and 01 are in
+        columns 8 through 11.
+
+    (4) All clauses, other than the division and section identifiers,
+        and the level indicators, are in columns 12 through 72.
+
+
+ Assumptions regarding the clauses that identify divisions & section
+
+    (1) In order for it to recognize the beginning of divisions, it
+        checks for occurrences of the strings:
+
+           IDENTIFICATION DIVISION
+           ENVIRONMENT DIVISION
+           DATA DIVISION
+           PROCEDURE DIVISION
+
+    (2) In order for it to recognize the beginning of the file
+        section, it checks for an occurrence of the string:
+
+           FILE SECTION
+
+    (3) In order for it to recognize level indicators, it checks
+        for occurrences of the following strings within columns
+        8 through 11:
+
+           01
+           FD
+           SD
+           CD
+           RD
+
+
+
+
+
+
+ COB2SAS, Release 2 Usage Guide                          Page  4
+
+
+ Assumptions regarding COPY members
+
+    (1) The entries are syntactically correct COBOL statements.
+
+    (2) COB2SAS should process copy members that begin with either
+        'DATA DIVISION', 'FILE SECTION', or a level indicator in
+        area A.  If none of these are encountered, it will inspect
+        the first token of each line for one that initiates a clause
+        in a data description entry. If it finds such a token, it
+        will begin processing.
+
+    If the COBOL language statements that COB2SAS is reading are in
+ a form that the COBOL compiler can use and you are not getting
+ output from COB2SAS, there are a couple of things that you can do to
+ find out what may be wrong.  Within the member that invokes COB2SAS
+ on your system (for example, R2MVS on MVS), you will find the
+ SWITCHES data set. The SWITCHES data set allows you to put various
+ options in effect when COB2SAS is processing.
+
+    For purposes of determining why COB2SAS is not producing output,
+ use the TRACEPRS option. The TRACEPRS option determines the type of
+ tracing information produced while parsing. For more details on this
+ option, as well as further discussion of other available options,
+ please refer to the COB2SAS, Release 2 Reference manual.
+
+
+ * Status of COB2SAS Development
+
+    This version of COB2SAS is dated 22Jul90 and is Release 2.
+ As of the date of this release, there are no plans to produce a
+ third release.  The purpose of a third release would be to correct
+ any flaws in Release 2 and to provide enhancements that will make
+ COB2SAS a more useful tool.
+
+    Although there are no plans to produce a third release, that
+ plan is subject to change depending on response from those who use
+ COB2SAS.  Please use the following procedure to document flaws that
+ you have uncovered in COB2SAS, Release 2 or any requests for
+ enhancements.
+
+    Acquire a hard copy of the COBOL entry and either the equivalent
+ SAS statement that should be produced or a suggestion of how COB2SAS
+ ought to handle the entry. Please mail these items, along with your
+ name, address and site number to:
+
+    Tom Zack, Technical Support
+    SAS Institute Inc.
+    Box 8000
+    Cary, North Carolina    27511-8000
+
+    Although I cannot guarantee that your suggestion will be
+ implemented,  please accept my thanks for the time that you
+ invest in this project.
+
+
+ COB2SAS, Release 2 Usage Guide                          Page  5
+
+
+ * How to use COB2SAS, Release 2 under CMS
+
+    To use COB2SAS, associate the fileref INCOBOL with the flat
+ file that has your COBOL record descriptions and include R2CMS
+ for execution by the SAS System.  By default, the data dictionary
+ is temporarily stored in the WORK library and the SAS language
+ statements produced by COB2SAS are written to the SAS Log.
+
+    Included with COB2SAS, Release 2 are files, CP1 COBOL, which
+ has COBOL language data description entries and, CP1LOG LOG and
+ CP1LST LISTING, which have the output produced by executing the
+ sample program shown below. You may want to use these files to get
+ an idea of how COB2SAS works. If you choose to do so, submit the
+ sample program shown below.
+
+ NOTE: There is no need for you to type in a copy of this program
+       yourself. Since a copy of this guide is in the file R2USGD,
+       you can get a copy of this program from R2USGD.
+
+ The SAS System must be invoked with the SAS System options, MACRO
+ and DQUOTE, in order for COB2SAS, Release 2 to work properly.
+
+
+    OPTIONS NONOTES NOSOURCE NOSOURCE2;
+    X FILEDEF INCOBOL DISK CP1 COBOL fm;
+    RUN;
+
+    %INCLUDE COB2SAS(R2CMS);
+    RUN;
+
+    PROC PRINT DATA=DICTNRY;
+       FORMAT RDF_NAME $8.;
+       BY FILENAME NOTSORTED;
+       ID LEVEL;
+       VAR NST_DPTH NEWNAME USAGE PICTURE INFMT ATBYTE BYTES
+           OCR_VAL RDF_NAME;
+    RUN;
+
+    where fm is the filemode of the minidisk with the test data set
+
+    Compare the SAS Log and Listing files with the results provided
+ in data sets:
+
+    CP1LOG LOG fm
+    CP1LST LISTING fm
+
+    where fm is the filemode of the minidisk on which they reside.
+
+    Since the listing produced by the sample program is created by
+ PROC PRINT, it is possible that the format of your listing and the
+ listing in CP1LST will be slightly different. If output is produced
+ and the values in that output match those in CP1LST, then the sample
+ program has executed successfully.
+
+
+ COB2SAS, Release 2 Usage Guide                          Page  6
+
+
+ * Redirecting Output on CMS
+
+    After establishing that COB2SAS is running properly there are a
+ couple of things that you will probably want to do. First, you will
+ probably want to save, in a flat file, the SAS language statements
+ generated by COB2SAS. Second, you may wish to save your data
+ dictionary in a permanent SAS data set. To do this, you will need
+ to get a copy of R2CMS from the COB2SAS MACLIB. You can get a copy
+ of R2CMS by issuing the appropriate filedef's and using the CMS
+ MOVEFILE command. For example:
+
+   FILEDEF INMOVE DISK COB2SAS MACLIB fm (MEMBER R2CMS
+   FILEDEF OUTMOVE DISK R2CMS SAS fm
+   MOVEFILE
+
+
+ Once you have a copy of R2CMS, locate the following lines in it:
+
+    * %LET FILE = FILE OUTSAS;
+    * %LET LIBREF = PERM.;
+
+    (NOTE: The libref must end with a period as shown.)
+
+ Remove the leading *'s from these lines so that they will not be
+ treated as comments. You will then need to add filedef's to your
+ sample program. You need one to associate the fileref OUTSAS with a
+ flat file and one to associate the libref PERM to a permanent SAS
+ data set. What you end up with should be similar to this:
+
+
+    OPTIONS NONOTES NOSOURCE NOSOURCE2;
+    X FILEDEF INCOBOL DISK CP1 COBOL fm;
+    X FILEDEF OUTSAS  DISK OUTSAS SAS fm (DISP MOD;
+    X FILEDEF PERM    DISK DICTNRY PERM fm;
+    RUN;
+
+    %INCLUDE R2CMS;
+    RUN;
+
+    PROC PRINT DATA=PERM.DICTNRY;
+       BY FILENAME NOTSORTED;
+       FORMAT RDF_NAME $8.;
+       ID LEVEL;
+       VAR NST_DPTH NEWNAME USAGE PICTURE INFMT ATBYTE BYTES
+           OCR_VAL RDF_NAME;
+     RUN;
+
+ After submitting this job, the SAS language statements, produced by
+ COB2SAS, will be in the file, OUTSAS SAS, and the data dictionary
+ will be in the file, DICTNRY PERM.
+
+
+
+
+
+  COB2SAS, Release 2 Usage Guide                         Page  7
+
+
+ * Troubleshooting under CMS
+
+ If you encounter difficulties with this job, you may need to insure
+ that there are no files with filename, COB2SAS, on or ahead of the
+ minidisk on which the COB2SAS MACLIB resides. The SAS System may be
+ unable to locate members of the COB2SAS MACLIB if there are other
+ files with filename, COB2SAS, on or ahead of the minidisk on which
+ the COB2SAS MACLIB resides.
+
+
+ If you want to inspect the COB2SAS MACLIB, you can, if you wish,
+ use the MACLIST command.  MACLIST (which is a CMS command) is a
+ convenient facility for inspecting MACLIB's.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  COB2SAS, Release 2 Usage Guide                         Page  8
+
+
+ * How to use COB2SAS, Release 2 under MVS
+
+    To use COB2SAS, associate the fileref INCOBOL with the flat
+ file that has your COBOL record descriptions and include R2MVS
+ for execution by the SAS System.  By default, the data dictionary
+ is temporarily stored in the WORK library and the SAS language
+ statements produced by COB2SAS are written to the SAS Log.
+
+    Included with COB2SAS, Release 2 are members of the COB2SAS PDS,
+ CP1, which has COBOL language data description entries and, CP1LOG
+ and CP1LST, which have the output produced by executing the sample
+ program shown below. You may want to use these files to get an idea
+ of how COB2SAS works. If you choose to do so, submit the sample
+ program shown below.
+
+ NOTE: There is no need for you to type in a copy of this program
+       yourself. Since a copy of this guide is in the file R2USGD,
+       you can get a copy of this program from R2USGD.
+
+ The SAS System must be invoked with the SAS System options, MACRO
+ and DQUOTE, in order for COB2SAS, Release 2 to work properly.
+
+
+ Any lines that you must edit are denoted by, ' <==VERIFY'.
+
+    //TESTC2S JOB acct-info                                <== VERIFY
+    //        EXEC sas,OPTIONS='MACRO,DQUOTE'              <== VERIFY
+    //COB2SAS DD DISP=SHR,DSN=prefix.cob2sas.programs      <== VERIFY
+    //INCOBOL DD DISP=SHR,DSN=prefix.cob2sas.programs(CP1) <== VERIFY
+    //SYSIN   DD *
+
+      OPTIONS NONOTES NOSOURCE NOSOURCE2;
+
+      %INCLUDE COB2SAS(R2MVS);
+      RUN;
+
+      PROC PRINT DATA=DICTNRY;
+         FORMAT RDF_NAME $8.;
+         BY FILENAME NOTSORTED;
+         ID LEVEL;
+         VAR NST_DPTH NEWNAME USAGE PICTURE INFMT ATBYTE BYTES
+             OCR_VAL RDF_NAME;
+      RUN;
+    /*
+
+    Compare the SAS Log and Listing files with the results provided
+ in the CP1LOG and CP1LST members of the COB2SAS PDS.
+
+    Since the listing produced by the sample program is created by
+ PROC PRINT, it is possible that the format of your listing and the
+ listing in CP1LST will be slightly different. If output is produced
+ and the values in that output match those in CP1LST, then the sample
+ program has executed successfully.
+
+
+ COB2SAS, Release 2 Usage Guide                          Page  9
+
+
+ * Redirecting Output on MVS
+
+    After establishing that COB2SAS is running properly there are a
+ couple of things that you will probably want to do. First, you will
+ probably want to save, in a flat file, the SAS language statements
+ generated by COB2SAS. Second, you may wish to save your data
+ dictionary in a permanent SAS data set. To do this, you will need to
+ acquire a copy of R2MVS from the COB2SAS PDS.  Once you have a copy
+ of R2MVS, locate the following lines in it:
+
+    * %LET FILE = FILE OUTSAS;
+    * %LET LIBREF = PERM.;
+
+    (NOTE: The libref must end with a period as shown.)
+
+ Remove the leading *'s from these lines so that they will not be
+ treated as comments.  You will then need to add DD statements to
+ your sample program. You need one to associate the fileref OUTSAS
+ with a flat file and one to associate the libref PERM to a permanent
+ SAS data set. What you end up with should be similar to this:
+
+    //TESTC2S JOB acct-info
+    //        EXEC sas,OPTIONS='MACRO,DQUOTE'
+    //COB2SAS DD DISP=SHR,DSN=prefix.cob2sas.programs      <==VERIFY
+    //R2MVS   DD DISP=SHR,DSN=prefix.your.r2mvs            <==VERIFY
+    //INCOBOL DD DISP=SHR,DSN=prefix.cob2sas.programs(CP1) <==VERIFY
+    //OUTSAS  DD DISP=MOD,DSN=prefix.flat.file             <==VERIFY
+    //PERM    DD DISP=OLD,DSN=prefix.your.sasds            <==VERIFY
+    //SYSIN   DD *
+
+      OPTIONS NONOTES NOSOURCE NOSOURCE2;
+
+      %INCLUDE R2MVS;
+      RUN;
+
+      PROC PRINT DATA=PERM.DICTNRY;
+         FORMAT RDF_NAME $8.;
+         BY FILENAME NOTSORTED;
+         ID LEVEL;
+         VAR NST_DPTH NEWNAME USAGE PICTURE INFMT ATBYTE BYTES
+             OCR_VAL RDF_NAME;
+      RUN;
+    /*
+
+ After submitting this job, the SAS language statements, produced by
+ COB2SAS, will be in the file, OUTSAS, and the data dictionary will
+ be in the file, PERM.
+
+ If you execute COB2SAS interactively, use TSO ALLOCATE statements
+ in place of the DD statements shown in the sample program above.
+ For example:
+
+      ALLOC FI(OUTSAS) DA('prefix.flat.file') MOD
+      ALLOC FI(PERM)   DA('prefix.your.sasds') OLD
+
+ COB2SAS, Release 2 Usage Guide                          Page 10
+
+
+ * Using the FILENAME and LIBNAME statements on MVS and CMS
+
+    The LIBNAME and FILENAME statements are available in Version 6
+ of the SAS System on CMS and MVS.
+
+ Under MVS, these statements allow you to submit the same job in both
+ interactive mode and batch mode without converting TSO allocate
+ statements to JCL DD statements and vice versa.
+
+ Under CMS, these statements provide more efficient processing than
+ CMS filedef statements.
+
+ Using the LIBNAME and FILENAME statements is preferable to coding
+ JCL DD statements, TSO allocate statements and CMS filedef
+ statements because they work without modification in both batch
+ and interactive modes and they are portable across operating
+ systems.
+
+
+ * The FILENAME statement
+
+ The FILENAME statement is used to associate a fileref with an
+ external file.
+
+ The general format of the FILENAME statement is:
+
+          FILENAME fileref 'data-set-name' <options>;
+
+ fileref - is a 1 to 8 character, valid SAS name.
+           It is used to identify the file to the SAS System.
+
+ data-set-name -
+           is the name of the data set as it is usually denoted on
+           your operating system.
+
+ options - that may be specified on the FILENAME statement include,
+           but are not limited to, LRECL=, RECFM=, DISP=.
+
+
+ Examples:
+
+
+    FILENAME OUTSAS 'prefix.flat.file' DISP=MOD;
+
+    associates the fileref OUTSAS with a flat file on MVS.
+
+
+    FILENAME OUTSAS 'filename filetype filemode' DISP=MOD;
+
+    associates the fileref OUTSAS with a flat file on CMS.
+
+
+
+
+
+ COB2SAS, Release 2 Usage Guide                          Page 11
+
+
+ * The LIBNAME statement
+
+ The LIBNAME statement associates a libref with a SAS data library.
+ The LIBNAME statement also associates an access engine with a SAS
+ data library.
+
+ The general format of the LIBNAME statement is:
+
+     LIBNAME libref <engine> 'SAS-data-library' <options>;
+
+ libref -  is a 1 to 8 character, valid SAS name.
+           It is used to identify the library to the SAS System.
+
+ engine -  an optional specification of any valid engine name.
+
+ SAS-data-library -
+           references the file in which SAS data sets reside.
+           The exact syntax is host dependent.
+
+ options - that may be specified on the LIBNAME statement include,
+           but are not limited to, BLKSIZE=.
+
+
+ Examples:
+
+
+    LIBNAME PERM  'your.sas.library';
+
+    associates the libref PERM to a SAS data library on MVS.
+
+
+    LIBNAME PERM 'filetype filemode';
+
+    associates the libref PERM to a SAS data library on CMS.
+
+
+
+ For more information on these statements, refer to the SAS Language:
+ Reference, Version 6 First Edition and the SAS Companion for your
+ operating system.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ COB2SAS, Release 2 Usage Guide                          Page 12
+
+
+ * How to use COB2SAS, Release 2 under VMS
+
+    To use COB2SAS, associate the fileref INCOBOL with the flat
+ file that has your COBOL record descriptions and include R2VMS
+ for execution by the SAS System.  By default, the data dictionary
+ is temporarily stored in the WORK library and the SAS language
+ statements produced by COB2SAS are written to the SAS Log.
+
+    Included with COB2SAS, Release 2 are files, CP1.DAT, which
+ has COBOL language data description entries and, CP1LOG.DAT and
+ CP1LST.DAT, which have the output produced by executing the sample
+ program shown below. You may want to use these files to get an idea
+ of how COB2SAS works. If you choose to do so, submit the sample
+ program shown below.
+
+ NOTE: There is no need for you to type in a copy of this program
+       yourself. Since a copy of this guide is in the file R2USGD,
+       you can get a copy of this program from R2USGD.
+
+ Version 6 of the SAS System must be invoked with the SAS System
+ option, MACRO, in order for COB2SAS, Release 2 to work properly.
+
+
+    OPTIONS NONOTES NOSOURCE NOSOURCE2;
+    FILENAME INCOBOL 'SAS$ROOT:<SAMPLES.BASE.COB2SAS>CP1.DAT';
+    RUN;
+
+    %INCLUDE 'SAS$ROOT:<SAMPLES.BASE.COB2SAS>R2VMS.SAS';
+    RUN;
+
+    PROC PRINT DATA=DICTNRY;
+       BY FILENAME NOTSORTED;
+       FORMAT RDF_NAME $8.;
+       ID LEVEL;
+       VAR NST_DPTH NEWNAME USAGE PICTURE INFMT ATBYTE BYTES
+           OCR_VAL RDF_NAME;
+    RUN;
+
+ Compare the SAS Log and Listing files with the results provided in
+ the CP1LOG.DAT and CP1LST.DAT data sets.
+
+    Since the listing produced by the sample program is created by
+ PROC PRINT, it is possible that the format of your listing and the
+ listing in CP1LST will be slightly different. If output is produced
+ and the values in that output match those in CP1LST, then the sample
+ program has executed successfully.
+
+
+
+
+
+
+
+
+
+ COB2SAS, Release 2 Usage Guide                          Page 13
+
+
+ * Redirecting Output on VMS
+
+    After establishing that COB2SAS is running properly there are a
+ couple of things that you will probably want to do. First, you will
+ probably want to save, in a flat file, the SAS language statements
+ generated by COB2SAS. Second, you may wish to save your data
+ dictionary in a permanent SAS data set. To do this, you will need to
+ get a copy of R2VMS from the COB2SAS directory. Once you have a copy
+ of R2VMS, locate the following lines in it:
+
+    * %LET FILE = FILE OUTSAS;
+    * %LET LIBREF = PERM.;
+
+    (NOTE: The libref must end with a period as shown.)
+
+ Remove the leading *'s from these lines so that they will not be
+ treated as comments. You will then need to add FILENAME and LIBNAME
+ statements to your sample program. You need a FILENAME statement to
+ associate the fileref OUTSAS with a flat file. You need a LIBNAME
+ statement to associate the libref PERM to a permanent SAS data set.
+ What you end up with should be similar to this:
+
+
+    OPTIONS NONOTES NOSOURCE NOSOURCE2;
+    FILENAME INCOBOL 'SAS$ROOT:<SAMPLES.BASE.COB2SAS>CP1.DAT';
+    FILENAME OUTSAS  'OUTSAS.DAT' MOD;
+    LIBNAME  PERM    '<>';
+    RUN;
+
+    %INCLUDE 'R2VMS.SAS';
+    RUN;
+
+    PROC PRINT DATA=PERM.DICTNRY;
+       BY FILENAME NOTSORTED;
+       FORMAT RDF_NAME $8.;
+       ID LEVEL;
+       VAR NST_DPTH NEWNAME USAGE PICTURE INFMT ATBYTE BYTES
+           OCR_VAL RDF_NAME;
+    RUN;
+
+    where <> refers to the default directory.
+
+
+ After submitting this job, the SAS language statements, produced by
+ COB2SAS, will be in the file, OUTSAS.DAT. When run under Version 5
+ of the SAS System, the data dictionary will be in the file,
+ DICTNRY.SSD. When run under Version 6 of the SAS System, the data
+ dictionary will be in the file, DICTNRY.SASEB$DATA.
+
+
+
+
+
+
+
+  COB2SAS, Release 2 Usage Guide                         Page 14
+
+
+ * How to use COB2SAS, Release 2 under VSE
+
+    To use COB2SAS, associate the fileref INCOBOL with the flat
+ file that has your COBOL record descriptions and include R2VSE
+ for execution by the SAS System.  By default, the data dictionary
+ is temporarily stored in the WORK library and the SAS language
+ statements produced by COB2SAS are written to the SAS Log.
+
+    Included with COB2SAS, Release 2 are members of the COB2SAS
+ library, CP1, which has COBOL language data description entries and,
+ CP1LOG and CP1LST, which have the output produced by executing the
+ sample program shown below. You may want to use these files to get
+ an idea of how COB2SAS works. If you choose to do so, submit the
+ sample program shown on the next page.
+
+
+ NOTE: There is no need for you to type in a copy of the program
+       yourself. Since a copy of this guide is in the file R2USGD,
+       you can get a copy of this program from R2USGD.
+
+
+ The SAS System must be invoked with the SAS System options, MACRO
+ and DQUOTE, in order for COB2SAS, Release 2 to work properly.
+
+ Be sure to allocate plenty of space to the WORK library in order for
+ this job to successfully complete.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  COB2SAS, Release 2 Usage Guide                         Page 15
+
+
+ Any lines that you must edit are denoted by, ' <== VERIFY'.
+
+    * $$ JOB   JNM=TESTC2S                                 <== VERIFY
+    * $$ LST   LST=device1,CLASS=c                         <== VERIFY
+    * $$ LST   LST=device2,CLASS=c                         <== VERIFY
+    // JOB     TESTC2S
+    // ASSGN   SYSIPT,SYSRDR
+    // ASSGN   SYS011,device1     SAS Log                  <== VERIFY
+    // ASSGN   SYSLST,device2     SAS Listing              <== VERIFY
+    // ASSGN   SYS006,SYSLST
+    *
+    // DLBL    INCOBOL,'cp1',0                             <== VERIFY
+    // EXTENT  SYSnnn,volser,1,0,begin,numberof            <== VERIFY
+    // ASSGN   SYSnnn,DISK,VOL=volser,SHR                  <== VERIFY
+    *
+    // DLBL    COB2SAS,'your.vsam.dataset',,VSAM,USER=cat  <== VERIFY
+    *
+    // EXEC    PROC=sasproc                                <== VERIFY
+    // LIBDEF  SOURCE,SEARCH=(COB2SAS.PROGRAMS)
+    // LIBDEF  PHASE,SEARCH=(saslib.sasbase)               <== VERIFY
+    // EXEC    SASVSE,SIZE=(SASVSE,42K),PARM='MACRO,DQUOTE'
+
+       OPTIONS NONOTES NOSOURCE NOSOURCE2;
+       PROC SOURCE OUTDD=INCOBOL OUTBLK=80 NOPRINT SEARCH SUBLIB=S;
+          SELECT CP1;  BEFORE;  AFTER;
+       RUN;
+
+       %INCLUDE S(R2VSE);
+       RUN;
+
+       PROC PRINT DATA=DICTNRY;
+          FORMAT RDF_NAME $8.;
+          BY FILENAME NOTSORTED;
+          ID LEVEL;
+          VAR NST_DPTH NEWNAME USAGE PICTURE INFMT ATBYTE BYTES
+              OCR_VAL RDF_NAME;
+      RUN;
+     /*
+     /&
+     * $$ EOJ
+
+
+
+ Compare the SAS Log and Listing files with the results provided in
+ the CP1LOG and CP1LST members of the COB2SAS.PROGRAMS sublibrary.
+
+    Since the listing produced by the sample program is created by
+ PROC PRINT, it is possible that the format of your listing and the
+ listing in CP1LST will be slightly different. If output is produced
+ and the values in that output match those in CP1LST, then the sample
+ program has executed successfully.
+
+
+
+
+  COB2SAS, Release 2 Usage Guide                         Page 16
+
+
+ * Redirecting Output on VSE
+
+    After establishing that COB2SAS is running properly there are a
+ couple of things that you will probably want to do. First, you will
+ probably want to save, in flat files, the SAS language statements
+ generated by COB2SAS. Second, you may wish to save your data
+ dictionary in a permanent SAS data set. To do this, you will need to
+ acquire a copy of R2VSE from the COB2SAS library. Once you have a
+ copy of R2VSE, locate the following lines in it:
+
+    * %LET FILE = FILE OUTSAS1 ;
+    * %LET LIBREF = PERM.;
+
+    (NOTE: The libref must end with a period as shown.)
+
+    * %LET FILE = FILE OUTSAS2 ;
+
+ Remove the leading *'s from these lines so that they will not be
+ treated as comments.  You will then need to add JCL statements to
+ your sample program. You need one set of statements to associate
+ the fileref OUTSAS1 with a flat file, one set of statements to
+ associate the fileref OUTSAS2 with a flat file and one set to
+ associate the libref PERM with a permanent SAS data set.
+
+ These JCL statements will associate a file with the fileref OUTSAS1:
+
+    // DLBL    OUTSAS1,'your.file.name',date               <== VERIFY
+    // EXTENT  SYSnnn,volser,1,0,begin,numberof            <== VERIFY
+    // ASSGN   SYSnnn,DISK,VOL=volser,SHR                  <== VERIFY
+
+ These JCL statements will associate a file with the fileref OUTSAS2:
+
+    // DLBL    OUTSAS2,'your.file.name',date               <== VERIFY
+    // EXTENT  SYSnnn,volser,1,0,begin,numberof            <== VERIFY
+    // ASSGN   SYSnnn,DISK,VOL=volser,SHR                  <== VERIFY
+
+ If you are creating the SAS data set for the first time, then edit
+ your copy of R2VSE and change:
+
+   %LET LIBREF = PERM.;  to  %LET LIBREF = OPERM.;
+
+ These JCL statements will associate a file with the libref OPERM:
+
+    // DLBL    OPERM,'your.new.sas.library',date           <== VERIFY
+    // EXTENT  SYSnnn,volser,1,0,begin,numberof            <== VERIFY
+    // ASSGN   SYSnnn,DISK,VOL=volser,SHR                  <== VERIFY
+
+
+
+
+
+
+
+
+
+ COB2SAS, Release 2 Usage Guide                          Page 17
+
+
+ After the SAS data set has been created for the first time, be
+ sure to change references to libref 'OPERM.' back to 'PERM.'.
+ Also use these JCL statements to associate the existing file with
+ the libref PERM:
+
+  // DLBL    PERM,'your.existing.library'
+  // EXTENT  SYSnnn,volser,1,0,begin,numberof
+  // ASSGN   SYSnnn,DISK,VOL=volser,SHR
+
+
+
+    An example job that will redirect output from COB2SAS is shown
+ below and continued onto the next page.
+
+ Any lines that you must edit are denoted by, ' <== VERIFY'.
+
+    * $$ JOB   JNM=TESTC2S                                 <== VERIFY
+    * $$ LST   LST=device1,CLASS=c                         <== VERIFY
+    * $$ LST   LST=device2,CLASS=c                         <== VERIFY
+    // JOB     TESTC2S
+    // ASSGN   SYSIPT,SYSRDR
+    // ASSGN   SYS011,device1     SAS Log                  <== VERIFY
+    // ASSGN   SYSLST,device2     SAS Listing              <== VERIFY
+    // ASSGN   SYS006,SYSLST
+    *
+    // DLBL    INCOBOL,'cp1',0                             <== VERIFY
+    // EXTENT  SYSnnn,volser,1,0,begin,numberof            <== VERIFY
+    // ASSGN   SYSnnn,DISK,VOL=volser,SHR                  <== VERIFY
+    *
+    // DLBL    OUTSAS1,'your.file.name',date               <== VERIFY
+    // EXTENT  SYSnnn,volser,1,0,begin,numberof            <== VERIFY
+    // ASSGN   SYSnnn,DISK,VOL=volser,SHR                  <== VERIFY
+    *
+    // DLBL    OUTSAS2,'your.file.name',date               <== VERIFY
+    // EXTENT  SYSnnn,volser,1,0,begin,numberof            <== VERIFY
+    // ASSGN   SYSnnn,DISK,VOL=volser,SHR                  <== VERIFY
+    *
+    // DLBL    OPERM,'your.new.sas.library',date           <== VERIFY
+    // EXTENT  SYSnnn,volser,1,0,begin,numberof            <== VERIFY
+    // ASSGN   SYSnnn,DISK,VOL=volser,SHR                  <== VERIFY
+    *
+    // DLBL    COB2SAS,'your.vsam.dataset',,VSAM,USER=cat  <== VERIFY
+    *
+    // EXEC    PROC=sasproc                                <== VERIFY
+    // LIBDEF  SOURCE,SEARCH=(COB2SAS.PROGRAMS)
+    // LIBDEF  PHASE,SEARCH=(saslib.sasbase)               <== VERIFY
+    // EXEC    SASVSE,SIZE=(SASVSE,42K),PARM='MACRO,DQUOTE'
+
+
+
+
+
+
+
+
+ COB2SAS, Release 2 Usage Guide                          Page 18
+
+
+       OPTIONS NONOTES NOSOURCE NOSOURCE2;
+       PROC SOURCE OUTDD=INCOBOL OUTBLK=80 NOPRINT SEARCH SUBLIB=S;
+          SELECT CP1;  BEFORE;  AFTER;
+       RUN;
+
+       %INCLUDE S(R2VSE);
+       RUN;
+
+       PROC PRINT DATA=OPERM.DICTNRY;
+          FORMAT RDF_NAME $8.;
+          BY FILENAME NOTSORTED;
+          ID LEVEL;
+          VAR NST_DPTH NEWNAME USAGE PICTURE INFMT ATBYTE BYTES
+              OCR_VAL RDF_NAME;
+      RUN;
+     /*
+     /&
+     * $$ EOJ
+
+ After submitting this job, the SAS input statements, produced by
+ COB2SAS, will be in the file, OUTSAS1, the SAS label statements
+ will be in the file, OUTSAS2, and the data dictionary will be in
+ the file, OPERM.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ COB2SAS, Release 2 Usage Guide                          Page 19

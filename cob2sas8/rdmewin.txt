@@ -1,0 +1,58 @@
+ADDITIONAL DISCLAIMER FOR WINDOWS
+
+COB2SAS is designed to work on MVS, CMS, VMS, and VSE. Since COB2SAS
+is just a big data step, it will physically execute on any platform
+that SAS runs on with minor modifications to the COB2SAS code. The
+problem is that it is likely that either COB2SAS will not be able to
+parse the copybook or that the INPUT statement COB2SAS generates will
+not work on other platforms because of differences in the way that
+packed fields are stored.
+
+In order for COB2SAS to work on another platform, a few things must be
+true.  First the COBOL syntax of the copybook you are trying to
+convert has to conform to ANSI specification X3.23-1985. Second, the
+various pictures, clauses, and usages must translate to the SAS
+informats in the way that is described in SAS Note V6-SYS.SYS-2503.
+This usage note is included as filename U2503.TXT.
+
+The only exception to the above 2 rules are when you're downloading
+both the copybook and the data from MVS, CMS, or VSE.  In that case
+you need to download the data portion in BINARY.  You can then
+uncomment the %INCLUDE(R2S370) statement in the R2WIN program.  This
+will translate the formats into S370Fxxx formats allowing you to read
+the file on your PC as a binary file.
+
+
+
+INSTALLING COB2SAS ON WINDOWS
+
+By unzipping the COB2SAS8.ZIP file, you've installed COB2SAS.  All you
+have to do now is verify that it works.  Follow the following
+instructions to do that :
+
+1) To run COB2SAS use the WINDMS.SAS program.  Make the necessary
+   modifications to the FILENAME statements as per the comments.
+   Point the INCOBOL fileref to the CP1.TXT file and run the program.
+
+2) When the job completes, make sure you didn't get any ERRORS in the
+   SASLOG (or log window).
+
+3) If you didn't receive any errors, then compare the output in the
+   OUTSAS.TXT file (the file pointed to by the OUTSAS fileref in the
+   WINDMS.SAS program) to the contents of the CP1LOG.TXT file to make
+   sure that the results are the same.
+
+4) If the contents of OUTSAS.TXT matches the contents of CP1LOG.TXT,
+   then compare the output in your SASLIST (or output window) to the
+   contents of the CP1LST.TXT file.
+
+If everything matched up and you got no errors, then you're all set.
+
+If something didn't match, or if you got errors in your SASLOG, then
+verify that you did everything correctly.  If so, then change the
+options statement to include SOURCE and SOURCE2 options, rerun the
+program, and contact the SAS Technical Support department at
+919-677-8008 or send E-mail to support@sas.com.
+
+After you've verified your COB2SAS installation, you can use the
+WINDMS program to execute COB2SAS.

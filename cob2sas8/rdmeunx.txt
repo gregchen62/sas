@@ -1,0 +1,117 @@
+ADDITIONAL DISCLAIMER FOR UNIX
+
+COB2SAS is designed to work on MVS, CMS, VMS, and VSE. Since COB2SAS
+is just a big data step, it will physically execute on any platform
+that SAS runs on with minor modifications to the COB2SAS code. The
+problem is that it is likely that either COB2SAS will not be able to
+parse the copybook or that the INPUT statement COB2SAS generates will
+not work on other platforms because of differences in the way that
+packed fields are stored.
+
+In order for COB2SAS to work on another platform, a few things must be
+true.  First the COBOL syntax of the copybook your trying to convert
+has to conform to ANSI specification X3.23-1985. Second, the various
+pictures clauses and usages must translate to the SAS informats in the
+way that is described in SAS Note V6-SYS.SYS-2503.  This usage note is
+included as filename U2503.TXT.
+
+The only exception to the above 2 rules are when you're downloading
+both the copybook and the data from MVS, CMS, or VSE.  In that case
+you need to download the data portion in BINARY.  You can then
+uncomment the %INCLUDE(R2S370) statement in the R2UNX program.  This
+will translate the formats into S370Fxxx formats allowing you to read
+the file on your PC as a binary file.
+
+
+
+INSTALLING COB2SAS ON UNIX
+
+1) If you downloaded the COB2SAS8.ZIP file directly from UNIX, then
+   you have to take steps to handle the carriage return characters.
+   The COB2SAS8.ZIP file was created on a PC, so there are both
+   carriage returns and line feed characters in the files to signify
+   the end-of-record.  UNIX only needs the line feed characters.  So,
+   if you download the file directly to UNIX, you will see carriage
+   return characters at the end of every line.  The carriage return
+   character is '0d'x.  If you try to run the COB2SAS programs with
+   the carriage return characters in there, you will receive errors.
+
+   So, the first step in the installation process is to strip out the
+   carriage return characters from the downloaded COB2SAS programs.
+   If you don't already have a utility to strip out the carriage
+   return characters, you can use either of the following methods:
+
+   A) Download the zipped file to a PC, unzip them on your PC, then
+      FTP the individual files to your UNIX box.  FTP will remove the
+      carriage return characters for you.
+
+   B) Download the zipped file to your Unix box, unzip the files, then
+      run the included data step against the directory that contains
+      the unzipped files.  The data step, in another directory, will
+      create a new set of files that do not contain the carriage
+      return characters.  You can use this new directory for the
+      installation.
+
+=-=- START OF PROGRAM =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+    * POINT THE INDIR MACRO VARIABLE TO THE DIRECTORY THAT CONTAINS  ;
+    * THE UNZIPPED COB2SAS PROGRAMS                                  ;
+    %let indir=/u/your/indir;
+
+    * POINT THE OUTDIR MACRO VARIABLE TO THE DIRECTORY TO WHICH THE  ;
+    * NEW COB2SAS PROGRAMS WILL BE WRITTEN                           ;
+    %let outdir=/u/your/outdir;
+
+    data _null_;
+      length filename $12 fvi $50;
+      input filename $ @@;
+      fvi="&indir"||'/'||filename;
+      fvo="&outdir"||'/'||filename;
+      infile dummy1 filevar=fvi end=eof truncover;
+      file   dummy2 filevar=fvo;
+      do until(eof=1);
+        input @1 line $char80.;
+        line=translate(line,' ','0d'x);
+        put @1 line $char80.;
+      end;
+      cards;
+    cp1lst.txt  r2cob3.sas   r2old7.sas rdmecms.txt
+    README.txt  dsclmr.txt   r2cob4.sas rdmemvs.txt
+    U2503.txt   faq.txt      r2cob5.sas r2rfrn.txt
+    cmsdms.sas  mvsbatch.jcl r2cob6.sas r2s370.sas
+    mvsdms.sas  r2mvs.sas    r2unx.sas  tdmk.txt
+    copyrit.txt r2cms.sas    r2nstl.txt r2usgd.htm
+    cp1.txt     r2cob1.sas   r2old2.sas r2usgd.txt
+    cp1log.txt  r2cob2.sas   r2old6.sas r2win.txt
+    rdmeunx.txt rdmewin.txt  unxdms.sas windms.sas
+    FAQ.htm     r2rfrn.htm   r2usgd.htm
+    ;
+
+=-=- END OF PROGRAM =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+2) The next step is to verify your COB2SAS installation.  Run SAS
+   using the DMSUNX.SAS program to invoke COB2SAS.  Make the necessary
+   modifications to the FILENAME statements as per the comments.
+   Point the INCOBOL fileref to the CP1.TXT file and run the program.
+
+3) When the job completes, make sure you didn't get any ERRORS in the
+   SASLOG (or log window).
+
+4) If you didn't receive any errors, then compare the output in the
+   OUTSAS.TXT file to the contents of the CP1LOG.TXT file to make sure
+   that the results are the same.
+
+5) If the contents of OUTSAS.TXT matches the contents of CP1LOG.TXT,
+   then compare the output in your SASLIST (or output window) to the
+   contents of the CP1LST.TXT file.
+
+If everything matched up and you got no errors, then you're all set.
+
+If something didn't match, or if you got errors in your SASLOG, then
+verify that you did everything correctly.  If so, then change the
+options statement to include SOURCE and SOURCE2 options, rerun the
+program, and contact the SAS Technical Support department at
+919-677-8008 or send E-mail to support@sas.com.
+
+After you've verified your COB2SAS installation, you can use the
+DMSUNX program to execute COB2SAS.

@@ -1,0 +1,17 @@
+
+ Copyright 1989, 1990 by SAS Institute Inc., Cary, NC, USA.
+ All rights reserved. Printed in the United States of America.
+ The contents of this data set/library are proprietary licensed
+ material, property of SAS Institute Inc., Cary, North Carolina, USA.
+ The incorporation of customer modifications into the material
+ contained herein to form an updated work does not obviate or nullify
+ any SAS Institute proprietary rights.
+ Permission is hereby granted to reproduce the SAS Institute
+ supplied material contained herein for normal installation,
+ maintenance, and backup purposes, as well as the ordinary, usual,
+ customary, and intended purposes for which the material is supplied,
+ including, but not limited to, original production on hard copy of
+ actual SAS executions and/or terminal sessions. Reproduction under
+ other circumstances is permitted for purposes within the scope of
+ the customer's own use of the licensed material, provided the
+ reproduction carries this notice.

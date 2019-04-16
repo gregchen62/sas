@@ -1,0 +1,1636 @@
+<HTML>
+<HEAD>
+<TITLE>R2RFRN : COB2SAS Reference Guide </TITLE>
+</HEAD>
+<BODY LINK="#0000ff" VLINK="#800080">
+
+<H3>Files in which the programs are stored:</H3>
+  <DIR>
+  <P>R2CMS ........ Invokes COB2SAS on CMS.
+  <P>R2MVS ........ Invokes COB2SAS on MVS.
+  <P>R2VMS ........ Invokes COB2SAS on VMS(TM).
+  <P>R2VSE ........ Invokes COB2SAS on VSE.
+  <P>R2COB1 ........ Creates formats used for parsing.
+  <P>R2COB2 ........
+  </DIR>
+  <UL><DIR><DIR>
+    <UL>
+    <LI>Parses COBOL data description entries. </LI>
+    <LI>Creates the data dictionary. </LI>
+    <LI>Creates the group data set.</LI>
+    </UL>
+  </DIR></DIR></UL>
+  <DIR>
+  <P>R2COB3 ........ Updates the data dictionary with the nformation
+                     in the group data set.
+  <P>R2COB4 ........ Compresses COBOL data names to no ore than 8
+                     characters.
+    <DIR>
+    <I><P>NOTE: R2COB4 was modified to handle 32 character variable
+                names</I>
+    </DIR>
+  <P>R2COB5 ........ Expands OCCURS variables.
+  <P>R2COB6 ........ Uses the information in the data dictionary to
+                     produce SAS(R) language input statements.
+  <P>R2COB7 ........ Uses the information in the data dictionary to
+                     produce SAS language label statements.
+    <DIR>
+      <I><P> NOTE: R2COB6 and R2COB7 were combined into 1 program
+      which now resides in R2COB6.
+    </DIR> </DIR>
+
+</I></FONT><H3>Files in which the documentation is stored:</H3><DIR>
+
+<FONT SIZE=2><P>R2NSTL ........ COB2SAS, Release 2 Installation Guide
+<DIR>
+
+<I><P>NOTE: The Installation Guide has been supplemented with
+</I></FONT>
+<A HREF="http://ftp.sas.com/techsup/download/technote/ts536.html">
+   <I><FONT SIZE=2>TS-536:Installing COB2SAS from the
+   WWW.</I></FONT></A><I><FONT SIZE=2> </DIR>
+
+</I><P>R2RFRN ........ COB2SAS, Release 2 Reference
+<P>R2RNTS ........ COB2SAS, Release 2 Release Notes
+<P>R2USGD ........ COB2SAS, Release 2 Usage Guide
+<P>COPYRIT ........ COPYRIGHT Notice
+<P>DSCLMR ........ DISCLAIMER
+<P>TDMK ........ TRADEMARK Notice  </DIR>
+
+</FONT><H3>Files in which test data and their results are
+           stored:</H3><DIR>
+
+<FONT SIZE=2><P>CP1 ........ COBOL Program 1
+<P>CP1LOG ........ Log of an execution on COBOL Program 1.
+<P>CP1LST ........ Listing of an execution on COBOL Program 1.
+</FONT><B><FONT FACE="Arial"></DIR>
+
+<P>Contents <DIR>
+<DIR>
+
+</B></FONT><P><A HREF="#L1">Statement of Purpose &amp; Overview</A>
+<P><A HREF="#Datadictionary">Description of the Data Dictionary</A>
+<P><A HREF="#Expansion">Expansion of items and groups occurring more
+                        than once</A>
+<P><A HREF="#Statements">SAS language statements produced</A>
+<P><A HREF="#Assumptions">Assumptions, Restrictions and Caveats</A>
+<P><A HREF="#Recognized">Clauses that are recognized</A>
+<P><A HREF="#Attributes">Attributes that are recognized</A>
+<P><A HREF="#Programs">The programs that invoke COB2SAS, Release 2</A>
+<P><A HREF="#R2COB">R2COB1 through R2COB7</A>
+<P><A HREF="#programsdd">The programs that create the data
+                         dictionary</A>
+<P><A HREF="#ProcessingDD">Processing performed to build the data
+                           dictionary</A>
+<P><A HREF="#Parsing">Parsing algorithm</A>
+<P><A HREF="#Actions">Actions taken for each clause</A>
+<P><A HREF="#LevelNesting">Level Nesting</A>
+<P><A HREF="#UsageStack">Usage Stack</A>
+<P><A HREF="#GroupStack">Group Stack &amp; Group Data Set</A>
+<P><A HREF="#RedefinitionStack">Redefinition Stack</A>
+<P><A HREF="#OffsetStack">Offset Stack</A>
+<P><A HREF="#Conversion">Conversion from Usage and Picture to
+                         Informat</A>
+<P><A HREF="#Switches">Options available by way of the SWITCHES data
+                       set</A>
+<P><A HREF="#Extending">Extending recognition of attributes of data
+description entries</A><FONT SIZE=2>
+</FONT><P><A HREF="#Modifying">Modifying the program to parse other
+                               entries</A>
+<P><A HREF="#Acknowledgements">Acknowledgements</A><FONT SIZE=2>
+</DIR>
+
+</DIR>
+
+</FONT><B><FONT FACE="Arial"><P><A NAME="L1"></A>Statement of Purpose
+</B></FONT><FONT SIZE=2><P>COB2SAS is a tool that can assist you in
+   converting COBOL language entries into equivalent SAS language
+   statements.
+<P>COB2SAS, Release 2 is designed to assist you in converting
+   COBOL language data description entries into SAS language
+   statements.  It is also designed to be extendible so that you can
+   easily modify it to parse entries other than data description
+   entries.
+</FONT><B><FONT FACE="Arial"><P>Overview of COB2SAS, Release 2
+</B></FONT><FONT SIZE=2>
+<P>COB2SAS, Release 2 uses the information in the data
+   description entries of COBOL language programs to create a data
+   dictionary. Succeeding steps use this data dictionary to create
+   SAS language statements equivalent to the data description
+   entries.
+<P>There are several reasons for producing a data dictionary
+   prior to producing any SAS language statements. One important
+   reason is to provide a mechanism that allows the user to
+   reconcile the differing conventions of the COBOL and SAS
+   languages. Once a complete data dictionary is produced, these
+   differences can be reconciled by programs that use the data
+   dictionary as input.
+</FONT><B><FONT FACE="Arial"><P>Differences in the conventions of
+   the COBOL and SAS languages
+</B></FONT><FONT SIZE=2>
+<P>The COBOL language allows variable names to have up to 30
+   characters, but the SAS language allows only 8 characters for
+   variable names. The COBOL language has provisions for storing
+   character strings whose length exceeds 200, but the SAS language
+   can not store more than 200 characters in a single variable.
+</FONT><B><FONT FACE="Arial">
+<P><A NAME="Datadictionary"></A>Description of the Data
+   Dictionary
+</B></FONT><FONT SIZE=2>
+<P>A description of each variable in the data dictionary is given
+   here: <DIR>
+<DIR>
+<P>FILENAME (File Name)
+<P>The name of the file after the level indicator FD or SD in the
+   File Section of the Data Division.
+<P>LEVEL (Level Number)
+<P>The level number of the data description entry.
+<P>NST_DPTH (Nest Depth)
+<P>The depth of level nesting. Also known as the normalized level
+   number.
+<P>DATANAME (Data Name)
+<P>The name of the data item described by the data description
+   entry. This is either a programmer supplied word or the keyword
+   FILLER.
+<P>NEWNAME (New Name)
+<P>A compressed version of the data name. This name has no more
+   than 8 characters.
+<P>USAGE (Usage Value)
+<P>The usage of the data item described by the data description
+   entry. In the case of the beginning of a record, this has the
+   value 'GROUP'.
+<P>PICTURE (Picture Value)
+<P>The picture value, if any, of the data item described by the
+   data description entry. This is blank when USAGE has a value of
+   GROUP, COMP-1, COMP-2, BINARY, or INDEX.
+<P>INFMT (Informat)
+<P>The SAS language informat that corresponds to the usage and
+   picture value of the data description entry.
+<P>OCR_BASE (Occurs Base)
+<P>The byte at which an item or group that occurs more than once
+   begins.
+<P>ITM_DISP (Item Displacement)
+<P>The displacement from OCR_BASE of each item within a group
+   that occurs more than once.
+<P>ATBYTE (At Byte)
+<P>The byte at which the data item is located.
+<P>BYTES (Bytes)
+<P>The number of bytes in a group or data item.
+<P>OCR_VAL (Occurs Value)
+<P>The number of times that a group or item occurs when it occurs
+   more than once.
+<P>RDF_NAME (Redefines Name)
+<P>The data name, if any, of the data description entry being
+   redefined.
+</DIR>
+</DIR>
+</FONT><B><FONT FACE="Arial">
+<P><A NAME="Expansion"></A> Expansion of items and groups
+   occurring more than once </B></FONT><FONT SIZE=2>
+<P>After the data dictionary has been built, succeeding programs
+   use it as input. One of these programs (called, R2COB5) will
+   expand items and groups that occur more than once. This program
+   does not attempt to expand multidimensional tables. It only
+   expands 1 dimensional tables. This program uses the values in the
+   variables OCR_VAL, LEVEL, OCR_BASE and ITM_DISP to create the
+   number of entries specified in OCR_VAL.
+<P>The programs used to invoke COB2SAS, Release 2 on each
+   operating system (for example, R2MVS on MVS) are sent with the
+   inclusion of this program commented out. If you wish to invoke
+   it, you must uncomment the line that includes R2COB5 for
+   execution.
+</FONT><B><FONT FACE="Arial"><P><A NAME="Statements"></A>SAS
+   language statements produced
+</B></FONT><FONT SIZE=2><P>COB2SAS, Release 2 is able to produce
+   SAS language INPUT and LABEL statements.
+</FONT><B><FONT FACE="Arial"><P><A
+   NAME="Assumptions"></A>Assumptions, Restrictions, Caveats
+</B></FONT><FONT SIZE=2><P>COBOL language statements are parsed
+   in the program called R2COB2. R2COB2 does no checking for syntax
+   errors in the COBOL language statements. Furthermore, R2COB2
+   makes the following assumptions about the data description
+   entries that it will read.
+<P>Assumptions regarding the location of entries within margins:
+<OL>
+
+<LI>The contents of columns 1 through 6 are ignored.</LI>
+<LI>Any character in column 7, other than a blank or a hyphen,
+    causes the entire line to be ignored.</LI>
+<LI>The level indicators CD, FD, RD, SD, and 01 are in columns 8
+    through 11.</LI>
+<LI>All clauses, other than the division and section identifiers,
+    and the level indicators, are in columns 12 through 72.</LI></OL>
+<P>Assumptions regarding the clauses that identify divisions
+   &amp; sections
+
+<OL>
+<OL>
+
+<LI>In order for it to recognize the beginning of divisions, it
+    checks for occurrences of the strings:</LI>
+<P>IDENTIFICATION DIVISION
+<P>ENVIRONMENT DIVISION
+<P>DATA DIVISION
+<P>PROCEDURE DIVISION
+<LI>In order for it to recognize the beginning of the file
+    section, it checks for an occurrence of the string:</LI>
+<P>FILE SECTION
+<LI>In order for it to recognize level indicators, it checks for
+    occurrences of the following strings within columns 8 through
+    11:</LI></OL>
+</OL>
+<DIR>
+<DIR>
+<DIR>
+<DIR>
+
+<P>01
+<P>FD
+<P>SD
+<P>CD
+<P>RD </DIR>
+</DIR>
+</DIR>
+</DIR>
+
+<P>Caveats regarding level numbers <DIR>
+<DIR>
+
+<P>1 through 9 are recognized as valid level numbers. However
+   they are converted to 01 through 09 before they are output to the
+   data dictionary. </DIR>
+</DIR>
+
+<P>Caveat regarding FILLER <DIR>
+<DIR>
+
+<P>When a level number is not followed by either a programmer
+   supplied data name or the keyword FILLER, FILLER is output to the
+   data dictionary. </DIR>
+</DIR>
+
+<P>Restrictions regarding the PICTURE clause
+<OL>
+
+<LI>No attempt is made to make use of the operational character S
+    in the picture string.</LI>
+<LI>No attempt is made to either parse or make use of the
+    operational character P in the picture string.</LI>
+<LI>No attempt is made to honor a continuation indicator within a
+    picture string.</LI></OL>
+
+<P>Restrictions regarding the OCCURS clause
+<OL>
+
+<LI>No attempt is made to recognize the OCCURS clause on entries
+    with level number 01, 66 or 88.</LI>
+<LI>If the OCCURS clause has a DEPENDING ON clause, the number of
+    items is assumed to be the value after the keyword TO. In other
+    words, variable length tables are treated as fixed length.</LI>
+<LI>No attempt is made to address the issue of interrecord or
+    intrarecord slack bytes.</LI>
+<LI>No attempt is made to use any INDEX variables.</LI></OL>
+
+<P>Assumptions and Caveats regarding the REDEFINES clause
+<OL>
+
+<LI>The level number in the entry with a REDEFINES clause must be
+    the same as the level number of the item being redefined.</LI>
+<LI>There may be no intervening entries with the same or smaller
+    level number between a redefining entry and the item being
+    redefined.</LI>
+<LI>The redefining area may have a length that is less than or
+    equal to the length of the redefined area.</LI>
+<LI>No attempt is made to recognize the REDEFINES clause on
+    entries with level number 01.</LI>
+<LI>Multiple redefinition is supported.</LI>
+<P>Multiple redefintion is of the form:
+<P>B REDEFINES A
+<P>C REDEFINES A
+<P>Multiple redefinition is not of the form:
+<P>B REDEFINES A
+<P>C REDEFINES B
+<P>In other words, each redefinition in a multiple redefinition
+   redefines the same data area.
+<LI>Implicit redefinition caused by more than one level 01 entry
+    subordinate to the level indicator FD is supported.</LI></OL>
+
+<P>Caveat regarding the BLANK WHEN ZERO clause <DIR>
+<DIR>
+
+<P>The BLANK WHEN ZERO is only recognized on elementary items. </DIR>
+</DIR>
+
+<P>Caveats regarding the SYNCHRONIZED and JUSTIFIED clause
+<OL>
+
+<LI>No attempt is made to appropriately process these clauses.</LI>
+<LI>No attempt is made to address the issue of interrecord or
+    intrarecord slack bytes.</LI></OL>
+
+<P>Caveats and restrictions regarding the COPY Clause
+<OL>
+
+<LI>No attempt is made to parse pseudo-text.</LI>
+<LI>When a COPY clause is being built, R2COB2 looks for either a
+    level indicator, a level number, or the end of the file section
+    to terminate the COPY clause.</LI></OL>
+
+<P>Assumptions regarding COPY members
+<OL>
+
+<LI>The entries in copy members are syntactically correct COBOL
+    statements. In other words, the following assumptions regarding
+    the margins and the interpretation of entries within those
+    margins are made:</LI></OL>
+
+
+<UL>
+
+<UL>
+<LI>The contents of columns 1 through 6 are ignored. </LI>
+<LI>Any character in column 7, other than a blank or a hyphen,
+    causes the entire line to be ignored. </LI>
+<LI>The level indicators CD, FD, RD, SD, and 01 are in columns 8
+    through 11. </LI>
+<LI>All clauses, other than the division and section identifiers,
+    and the level indicators are in columns 12 through 72.</LI></UL>
+</UL>
+
+<OL>
+
+<LI>In order for R2COB2 to begin processing copy members, it must
+    set DIVISION to DATA_DIV, SECTION to FILE SECTION, and NTRYTYPE
+    to IN_DD. In order to do this, it searches for the character
+    strings 'DATA DIVISION' and 'FILE SECTION'. If it does not find
+    these strings, then it checks for a level indicator in area A. If
+    it does not find a level indicator in area A, it inspects the
+    first token of each line for one that identifies a clause in a
+    data description entry. If it finds the division or section
+    identifier, a level indicator, or a token that initiates a data
+    description entry clause, it will begin processing.</LI></OL>
+
+<P>Caveats regarding variable length tables.
+<OL>
+
+<LI>When building the data dictionary, variable length tables are
+    treated as fixed length.</LI>
+<LI>No attempt is made to produce SAS language statements that
+    will read variable length tables.</LI></OL>
+
+<P>Restrictions regarding variable length files. <DIR>
+<DIR>
+
+<P>No attempt is made to handle variable length files.
+</DIR>
+</DIR>
+
+</FONT><B><FONT FACE="Arial"><P><A NAME="Recognized"></A>Clauses
+    recognized
+</B></FONT><FONT SIZE=2><P>A list of clauses that R2COB2 is able
+    to parse is given here: <DIR>
+<DIR>
+
+<P>01 CLAUSE: <DIR>
+<DIR>
+
+<P>01 dataname
+<P>01 FILLER </DIR>
+</DIR>
+
+<P>02-49 CLAUSE <DIR>
+<DIR>
+
+<P>LEVEL-NUMBER dataname
+<P>LEVEL-NUMBER FILLER </DIR>
+</DIR>
+
+<P>REDEFINES CLAUSE <DIR>
+<DIR>
+
+<P>REDEFINES dataname
+<P>REDEFINES FILLER </DIR>
+</DIR>
+
+<P>EXTERNAL CLAUSE <DIR>
+<DIR>
+
+<P>EXTERNAL
+<P>IS EXTERNAL </DIR>
+</DIR>
+
+<P>GLOBAL CLAUSE <DIR>
+<DIR>
+
+<P>GLOBAL
+<P>IS GLOBAL </DIR>
+</DIR>
+
+<P>USAGE CLAUSE <DIR>
+<DIR>
+
+<P>usage-value
+<P>USAGE usage-value
+<P>USAGE IS usage-value </DIR>
+</DIR>
+
+<P>PICTURE CLAUSE <DIR>
+<DIR>
+
+<P>PIC pic-value
+<P>PIC IS pic-value
+<P>PICTURE pic-value
+<P>PICTURE IS pic-value </DIR>
+</DIR>
+
+<P>SIGN CLAUSE <DIR>
+<DIR>
+
+<P>sign-value
+<P>SIGN sign-value
+<P>SIGN IS sign-value
+<P>sign-value SEPARATE
+<P>sign-value SEPARATE CHARACTER
+<P>SIGN sign-value SEPARATE
+<P>SIGN IS sign-value SEPARATE
+<P>SIGN sign-value SEPARATE CHARACTER
+<P>SIGN IS sign-value SEPARATE CHARACTER </DIR>
+</DIR>
+
+<P>SYNCHRONIZED CLAUSE <DIR>
+<DIR>
+
+<P>SYNCHRONIZED
+<P>SYNCHRONIZED LEFT
+<P>SYNCHRONIZED RIGHT </DIR>
+</DIR>
+
+<P>JUSTIFIED CLAUSE <DIR>
+<DIR>
+
+<P>JUSTIFIED
+<P>JUSTIFIED RIGHT </DIR>
+</DIR>
+
+<P>BLANK CLAUSE <DIR>
+<DIR>
+
+<P>BLANK ZERO
+<P>BLANK WHEN ZERO </DIR>
+</DIR>
+
+<P>VALUE CLAUSE <DIR>
+<DIR>
+
+<P>VALUE val-value
+<P>VALUE IS val-value
+</DIR>
+</DIR>
+
+<P>OCCURS CLAUSE
+<P>66 CLAUSE
+<P>88 CLAUSE
+<P>COPY CLAUSE
+</DIR>
+</DIR>
+
+</FONT><B><FONT FACE="Arial"><P><A
+   NAME="Attributes"></A>Attributes that are recognized <DIR>
+<DIR>
+
+</B></FONT><FONT SIZE=2><P>01 Clause
+<P>01 Clause USAGE Clause
+<P>01 Clause PICTURE Clause
+<P>01 Clause PICTURE Clause BLANK WHEN ZERO Clause
+<P>01 Clause PICTURE Clause USAGE Clause
+<P>01 Clause PICTURE Clause USAGE Clause BLANK WHEN ZERO Clause
+<P>02-49 Clause
+<P>02-49 Clause USAGE Clause
+<P>02-49 Clause PICTURE Clause
+<P>02-49 Clause PICTURE Clause BLANK WHEN ZERO Clause
+<P>02-49 Clause PICTURE Clause USAGE Clause
+<P>02-49 Clause PICTURE Clause USAGE Clause BLANK WHEN ZERO Clause
+<P>02-49 Clause REDEFINES Clause
+<P>02-49 Clause REDEFINES Clause USAGE Clause
+<P>02-49 Clause REDEFINES Clause PICTURE Clause
+<P>02-49 Clause REDEFINES Clause PICTURE Clause BLANK WHEN ZERO Clause
+<P>02-49 Clause REDEFINES Clause PICTURE Clause USAGE Clause
+<P>02-49 Clause REDEFINES Clause PICTURE Clause USAGE Clause <DIR>
+<DIR>
+
+<P>BLANK WHEN ZERO Clause </DIR>
+</DIR>
+
+<P>02-49 Clause OCCURS Clause
+<P>02-49 Clause OCCURS Clause USAGE Clause
+<P>02-49 Clause OCCURS Clause PICTURE Clause
+<P>02-49 Clause OCCURS Clause PICTURE Clause BLANK WHEN ZERO Clause
+<P>02-49 Clause OCCURS Clause PICTURE Clause USAGE Clause
+<P>02-49 Clause OCCURS Clause PICTURE Clause USAGE Clause <DIR>
+<DIR>
+
+<P>BLANK WHEN ZERO Clause </DIR>
+</DIR>
+
+<P>66 Clause <DIR>
+<DIR>
+
+<P>This attribute is ignored. </DIR>
+</DIR>
+
+<P>88 Clause <DIR>
+<DIR>
+
+<P>This attribute is ignored. </DIR>
+</DIR>
+
+<P>Copy Clause <DIR>
+<DIR>
+
+<P>This attribute is ignored.
+</DIR>
+</DIR>
+</DIR>
+</DIR>
+
+</FONT><B><FONT FACE="Arial"><P><A NAME="Programs"></A>The
+    programs that invoke COB2SAS, Release 2
+
+</B></FONT><FONT SIZE=2><P>Included in COB2SAS, Release 2 are 4
+    programs, one for each operating system for which COB2SAS is
+    distributed, that invoke COB2SAS. These 4 files differ in the
+    conventions used to invoke R2COB1 through R2COB7 and in the
+    conventions used to reference files.
+
+
+<UL>
+<LI>R2CMS is used to invoke R2COB1 through R2COB7 on CMS. </LI>
+<LI>R2MVS is used to invoke R2COB1 through R2COB7 on MVS. </LI>
+<LI>R2VMS is used to invoke R2COB1 through R2COB7 on VMS. </LI>
+<LI>R2VSE is used to invoke R2COB1 through R2COB7 on VSE.</LI></UL>
+
+<P>Any special requirements for the INFILE and FILE statements
+   are provided in thes programs. Also, in these programs, you can
+   provide statements that will direct the data dictionary to a
+   permanent SAS data set and the SAS language statements to a flat
+   file.
+
+</FONT><B><FONT FACE="Arial"><P>Differences between CMS, MVS, VMS
+   and VSE
+</B></FONT><FONT SIZE=2><P>INFILE &amp; FILE statements
+
+<UL>
+<LI>Under CMS and MVS, there is no need to specify DCB
+    information on the INFILE and FILE statements. </LI>
+<LI>Under VSE, it necessary to provide complete and explicit DCB
+    information (that is, RECFM, LRECL and BLKSIZE). </LI>
+<LI>Under VMS, it necessary to explicitly provide RECFM=F
+    LRECL=80 so that the SAS System will treat the file as if it has
+    fixed length records.</LI></UL>
+
+<P>Conventions for including code for execution
+
+<UL>
+<LI>Code is included for execution from a MACLIB under CMS. </LI>
+<LI>Code is included for execution from a PDS under MVS. </LI>
+<LI>Code is included for execution from a sublibrary under VSE. </LI>
+<LI>Code is included for execution from a directory under
+    VMS.</LI></UL>
+
+<P>Appending to sequential files
+
+<UL>
+<LI>CMS, MVS and VMS allow specification of the MOD disposition.
+    This mechanism allows programs to append output to existing
+    sequential files.</LI>
+<LI>VSE provides no mechanism for appending output to existing
+    sequential files.</LI></UL>
+
+</FONT><B><FONT FACE="Arial"><P><A NAME="R2COB"></A>R2COB1
+    through R2COB7
+</B></FONT><FONT SIZE=2><P>The programs that convert COBOL
+    language data description entries into SAS language statements
+    are stored in 7 files.
+<OL>
+<OL>
+
+<LI>R2COB1 uses PROC FORMAT to create formats that are used while
+    parsing COBOL language data description entries.</LI>
+<LI>R2COB2 uses a data step to parse the data description entries
+    and produce 2 SAS data sets. The first data set contains an
+    observation for each data description entry. The second data set
+    has information about the lengths of groups of data items.</LI>
+<LI>R2COB3 uses PROC SORT and a data step to combine the group
+    data set and the data dictionary data set.</LI>
+<LI>R2COB4 uses PROC SORT and the data step to compress the
+    lengths of variable names to no more than 8 characters.</LI>
+<LI>R2COB5 is an optional step that uses a data step and PROC
+    SORT to expand 1 dimensional tables.</LI></OL>
+</OL>
+<DIR>
+<DIR>
+<DIR>
+<DIR>
+
+<P>R2COB5 is designed to: </DIR>
+</DIR>
+</DIR>
+</DIR>
+
+
+<UL><DIR>
+<DIR>
+
+
+<UL>
+<LI>expand items that occur no more than 999 times </LI>
+<LI>expand 1 dimensional tables</LI></UL>
+</DIR>
+</DIR>
+</UL>
+<DIR>
+<DIR>
+<DIR>
+<DIR>
+
+<P>In the event that either of the limits is exceeded, it will
+   generate an appropriate error message. </DIR>
+</DIR>
+</DIR>
+</DIR>
+
+
+<UL><DIR>
+<DIR>
+
+
+<UL>
+<LI>By default, the statement that includes R2COB5 is commented
+    out. If you want to use R2COB5, you will need to acquire a copy
+    of the program that invokes COB2SAS on your operating system (for
+    example, R2MVS on MVS) and uncomment the line that includes
+    R2COB5 for execution.</LI></UL>
+</DIR>
+</DIR>
+</UL>
+
+<OL>
+<OL>
+
+<LI>R2COB6 uses the data step to produce SAS input statements.</LI>
+<LI>R2COB7 uses the data step to produce SAS label
+    statements.</LI></OL>
+</OL>
+
+<P>Regardless of the operating system, the contents of R2COB1
+   through R2COB7 are identical.
+</FONT><B><FONT FACE="Arial"><P><A NAME="programsdd"></A>The
+   programs that create the data dictionary
+</B></FONT><FONT SIZE=2><P>R2COB1 <DIR>
+<DIR>
+
+<P>R2COB1 consists of PROC FORMAT statements. These formats are
+   used while parsing the COBOL language data description entries.
+   The following is a description of each of the formats.
+<P>$DDTFMT.
+<P>This format has a list of all keywords in the data description
+   entries. Any programmer supplied word, in the data description
+   entries, will resolve to the value OTHER.
+<P>$DDICFMT.
+<P>This format has a list of all the keywords that initiate a
+   clause. In the COBOL data description entries, each clause begins
+   with a keyword. For this reason, when the program is attempting
+   to identify the clause, it will always have exactly one keyword
+   that identifies the clause.
+<P>$DDCFMT.
+<P>This format is used to resolve each clause into a single
+   value. Since the exact construction of each clause often includes
+   optional words (for example, IS), each combination of required
+   and optional keywords in a clause is resolved into a single value
+   here.
+<P>DDSHOFMT
+<P>This format is used when the program encounters an entry that
+   it does not yet recognize. When the program recognizes that it
+   has encountered an entry that it does not recognize, it will use
+   this format to list each type of clause in the entry.
+<P>DDAVFMT
+<P>This format is used to convert those entries that it
+   recognizes into a single value and to return UNRECOGNIZED for
+   those entries that have not yet been defined. </DIR>
+</DIR>
+
+<P>R2COB2 <DIR>
+<DIR>
+
+<P>R2COB2 consists of a single data step. This data step creates
+   two SAS data sets called, DICTNRY and GROUP. The DICTNRY data set
+   contains an observation for each data description entry.  The
+   GROUP data set has information about the lengths of groups of
+   elementary items.
+<P>This data step reads either coomplete COBOL programs or COP
+   members. It keeps track of which division, section and type of
+   entries it is processing. When it is processing data description
+   entries within the File Section, it evaluates each token, clause
+   and entry. When a clause is complete, it extracts information
+   from that clause for later processing. When an entry is complete,
+   it processes the information it has extracted and it outputs an
+   observation to the DICTNRY data set.
+<P>This data step keeps track of: </DIR>
+</DIR>
+
+
+<UL>
+
+<UL>
+<LI>the depth of level nesting within the entries in the File
+    Section.</LI>
+<LI>the appropriate usage value for each level.</LI>
+<LI>the total number of bytes within each group of elementary
+    items.</LI>
+<LI>the position, within the file, at which each group begins.</LI>
+<LI>For records that occur more than once, when the end of that
+    group is encountered, it updates the number of bytes for that
+    record by multiplying the number of bytes in a single occurrence
+    by the number of times that it occurs.</LI>
+<LI>For groups that are redefined, it updates the position,
+    within the file, at which the redefining group begins.</LI>
+<LI>For nestings of groups within groups and the various
+    combinations of records, occurs and redefines, it maintains an
+    accurate count of the total number of bytes and the position,
+    within the file, for each group.</LI></UL>
+</UL>
+
+<P>R2COB3 <DIR>
+<DIR>
+
+<P>At the end of the R2COB2 data step, there is an observation in
+   the DICTNRY data set for each data description entry. If there
+   are any records, there is an observation for each in the GROUP
+   data set. The PROC SORT and data step in R2COB3 combines these
+   two data sets.
+</DIR>
+</DIR>
+
+</FONT><B><FONT FACE="Arial"><P>
+<A NAME="ProcessingDD"></A>Processing performed to build the data
+   dictionary
+</B></FONT><FONT SIZE=2>
+<P>The data dictionary is a SAS data set that is built by the
+   data step in the R2COB2 file.  The following is a description of
+   the algorithm used to build the data dictionary.
+
+<UL>
+<LI>Read a line from the input file. </LI>
+<LI>Skip blank lines. </LI>
+<LI>If the variable TRACEPRS has a value of 9, then display a
+    ruler, and the contents of the current and next lines.  Return to
+    the top of the data step. </LI>
+<LI>Evaluate the contents of column 7. If the indicator area has
+    anything other than a blank or a hyphen, return to the top of the
+    data step. </LI>
+<LI>Check for a line that initiates a new division. </LI>
+<LI>Check for the beginning of a copy member. </LI>
+<LI>Depending upon the division, process the input appropriately.
+    </LI>
+
+<UL>
+<LI>In the case of the Identification and Environment Divisions,
+    no actions are taken. </LI>
+<LI>In the case of the Data Division, the file and data
+    description entries are processed. </LI>
+<LI>In the case of Procedure Division, unless the SEVERAL flag
+    has been set to 'Y', the program performs end of file processing
+    and stops.</LI></UL>
+</UL>
+
+</FONT><B><FONT FACE="Arial">
+<P>Processing within the Data Division
+
+<UL>
+</B></FONT><FONT SIZE=2>
+<LI>Upon initial entry into the Data Division, any pending
+    processing is finished. </LI>
+<LI>Check for a line that initiates a new section. </LI>
+<LI>In the case of sections other than the File Section, no
+    actions are taken. </LI>
+<LI>In the case of the File Section, data description entries are
+    processed.</LI></UL>
+</FONT><B><FONT FACE="Arial">
+<P>Processing within the File Section
+</B></FONT><FONT SIZE=2>
+<P>Upon initial entry into the File Section, any pending
+    processing is finished.
+<P>The current line is evaluated to determine whether it has a
+    level indicator initiating entries in a file, sort-merge file, or
+    data description entry.
+<P>Depending on the type of entries, process the input
+    appropriately.
+
+<UL>
+<LI>In the case of file and sort-merge file description entries,
+    any pending processing is completed, initial values are set
+    appropriately, the value of the file name is saved for later
+    processing, and the program returns to the top of the data step.
+    </LI>
+<LI>In the case of data description entries, any pending
+    processing is completed, each word is parsed and evaluated (the
+    details of this process are described later), and the program
+    returns to the top of the data step.</LI></UL>
+
+</FONT><B><FONT FACE="Arial">
+<P>Processing Data Description Entries
+
+<UL>
+</B></FONT><FONT SIZE=2>
+<LI>Each data description is known as an entry. </LI>
+<LI>Each entry is made up of one or more clauses. </LI>
+<LI>Each clause specifies an attribute of the entry.</LI></UL>
+
+<P>When parsing data description entries, each clause is stored
+   in a variable CLS_STR, known as the clause string.
+<P>When the clause string is formatted with $DDCFMT, known as the
+   data description clause format, the value returned is used to set
+   a bit in the variable AV_SUM, known as the attribute vector.
+<P>Depending on the clause, information is extracted from the
+   clause string for processing when the end of the entry is
+   encountered.
+<P>When the end of an entry is encountered (which is when the
+   beginning of the next entry or the end of file description is
+   encountered), the value in the attribute vector is formatted with
+   the DDAVFMT, known as the attribute vector format. At this point,
+   the program can tell whether this particular set of attributes is
+   defined to it.
+<P>If the set of attributes is defined to it, it will make use of
+   the information that it acquired from each clause and attempt to
+   perform appropriate processing.
+<P>If the set of attributes is not defined to it, and only if the
+   variable ATTR_ERR is set to 'Y', it will use the SHOCLS format,
+   known as the show clause format to show each type of clause that
+   is in the entry. (It does not have the ability to show the actual
+   clause itself, instead it shows each type of clause in the
+   particular set of attributes that is undefined to it.)
+
+</FONT><B><FONT FACE="Arial"><P><A NAME="Parsing"></A>Parsing Algorithm
+</B></FONT><FONT SIZE=2>
+<P>The syntax of COBOL data description entries are defined in
+   general formats by the American National Standards Institute. In
+   addition to these general formats, each implementor of a COBOL
+   compiler may define extensions to these formats. COB2SAS, Release
+   2 is designed to recognize the general formats for data
+   description entries in the ANSI specification X3.23-1985, as well
+   as, some of the extensions implemented in IBM(R) OS/VS COBOL.
+</FONT><B><FONT FACE="Arial"><P>Overview of the parsing algorithm
+</B></FONT><FONT SIZE=2>
+<P>Each data description entry consists of one or more
+   attributes. Each attribute is specified by a clause. For example,
+   the entry <DIR>
+<DIR>
+
+</FONT><FONT FACE="Courier New" SIZE=2><P>05 MONTHLY-PAYMENT <DIR>
+<DIR>
+
+<P>PICTURE IS 9(6)V99
+<P>USAGE IS COMP-3
+<P>OCCURS 1 TO 12 TIMES DEPENDING ON CURRENT-MONTH. </DIR>
+</DIR>
+</DIR>
+</DIR>
+
+</FONT><FONT SIZE=2>
+<P>consists of 4 attributes, namely, the level clause, the
+   picture clause, the usage clause and the occurs clause. Each
+   clause consists of one or more reserved words and zero or more
+   programmer supplied words. Reserved words may only be used as
+   specified in the general formats that describe each entry. The
+   values of programmer supplied words are, as the name implies,
+   supplied by the programmer. For example, in the clause <DIR>
+<DIR>
+
+</FONT><FONT FACE="Courier New" SIZE=2>
+<P>OCCURS 1 TO 12 TIMES DEPENDING ON CURRENT-MONTH
+</FONT><FONT SIZE=2></DIR>
+</DIR>
+
+<P>the tokens '1', '12' and 'CURRENT-MONTH' are programmer
+   supplied words and the remaining tokens are reserved words.
+<P>The parsing algorithm adds tokens to the current clause until
+   it recognizes that it has built one complete clause. When the end
+   of a clause is found, a bit in the attribute vector is set to
+   indicate that the clause is part of the entry. When the end of
+   the entry has been encountered, the attribute vector is evaluated
+   and acted upon.
+<P>Each clause begins with exactly 1 keyword and consists of 1 or
+   more keywords and programmer supplied words. Within the context
+   of several of the clauses, the numbers 1 through 49, 66 and 88
+   are valid programmer supplied words (for example, </FONT><FONT
+   FACE="Courier New" SIZE=2>'OCCURS 1 TO 49 TIMES DEPENDING ON
+   VAR1'</FONT><FONT SIZE=2>). These very same numbers can also
+   indicate the beginning of a clause (for example, </FONT><FONT
+   FACE="Courier New" SIZE=2>'01 VAR1'</FONT><FONT SIZE=2>).  For
+   this reason, a variable known as Parse Mode is employed. Parse
+   Mode either has the value 'Identify Clause' or the value
+   'Building Clause'. When it has the value, 'Identify Clause', the
+   keywords encountered are interpreted as the beginning of a new
+   clause. On the other hand, when it has the value, 'Building
+   Clause', the keywords and programmer supplied words are
+   interpreted as being tokens within the clause being built.
+<P>Although most of the clauses are relatively simple
+   constructions of a few words, there are several clauses that
+   consist of more than one repetition of the same set of keywords
+   and programmer supplied words. For this reason, a variable known
+   as Clause Mode is employed. For each clause, this variable is
+   given an appropriate value. When parsing data description
+   entries, Clause Mode may have the value 'Picture Clause', 'Value
+   Clause', 'Occurs Clause', '66 Clause', '88 Clause', 'Copy Clause'
+   and 'Simple Clause'.
+</FONT><B><FONT FACE="Arial">
+<P>Detailed example of parsing a data description entry
+</B></FONT><FONT SIZE=2>
+<P>Valid forms of the 02-49 Clause and the PICTURE Clause <DIR>
+<DIR>
+
+<P>level-number
+<P>level-number FILLER
+<P>level-number data-name
+<P>PICTURE character-string
+<P>PICTURE IS character-string
+<P>PIC character-string
+<P>PIC IS character-string </DIR>
+</DIR>
+
+<P>Partial listing of formats used while parsing <DIR>
+<DIR>
+
+<P>/* Data Description Identify Clause Format */ $DDICFMT <DIR>
+<DIR>
+
+<P>'01' - '49' = 'LEVEL NUMBER'
+<P>'PICTURE','PIC' = 'PICTURE'
+<P>OTHER = 'UNDEFINED' </DIR>
+</DIR>
+
+<P>/* Data Description Token Format */ $DDTFMT <DIR>
+<DIR>
+
+<P>'02' - '49' = '2.'
+<P>OTHER = '3.'
+<P>'FILLER' = '4.'
+<P>'IS' = '6.'
+<P>'PICTURE','PIC' = '9.' </DIR>
+</DIR>
+
+<P>/* Data Description Clause Format */ $DDCFMT <DIR>
+<DIR>
+
+<P>'2.3.','2.4.' = '2'
+<P>OTHER = 'UNDEFINED' </DIR>
+</DIR>
+
+<P>/* Data Description Show Format */ DDSHOFMT <DIR>
+<DIR>
+
+<P>2 = '02-49 CLAUSE'
+<P>6 = 'PICTURE CLAUSE'
+<P>OTHER = 'UNRECOGNIZED CLAUSE' </DIR>
+</DIR>
+
+<P>/* Data Description Attribute Vector Format */ DDAVFMT <DIR>
+<DIR>
+
+<P>68 = '2.6.'
+<P>OTHER = 'UNRECOGNIZED'
+</DIR>
+</DIR>
+</DIR>
+</DIR>
+
+</FONT><B><FONT FACE="Arial">
+<P>Algorithm used to parse a data description entry
+</B></FONT><FONT SIZE=2><P>The string in the input buffer is: <DIR>
+<DIR>
+
+<P>05 MONTHLY-PAYMENT PICTURE IS 9(6)V99. </DIR>
+</DIR>
+
+<P>The value of the Attribute Vector Sum is 0. <DIR>
+<DIR>
+
+<P>The next token is obtained. It is '05'.
+<P>Parse Mode has the value 'Identify Clause'.
+<P>The token is formatted with the $DDICFMT format.
+<P>The result is 'LEVEL NUMBER'.
+<P>Parse Mode is given the value 'Building Clause'.
+<P>Clause Mode is given the value 'Level Clause'.
+<P>Clause String is given the value of the token.
+<P>Clause String has the value '05'.
+<P>The token is formatted with the $DDTFMT and the result is
+   stored in the Token Vector.
+<P>Token Vector has the value '2.'.
+<P>Token Vector is formatted with the $DDCFMT format. </DIR>
+</DIR>
+
+<P>Clause ID is set to 'UNDEFINED'. <DIR>
+<DIR>
+
+<P>The next token is obtained. It is 'MONTHLY-PAYMENT'.
+<P>Parse Mode has the value 'Building Clause'.
+<P>Clause Mode has the value 'Level Clause'. <DIR>
+<DIR>
+
+<P>The token is concatenated to the Clause String.
+<P>Clause String has the value '05 MONTHLY-PAYMENT'.
+</DIR>
+</DIR>
+</DIR>
+</DIR>
+
+<P>The token is formatted with the $DDTFMT and the result is
+   concatenated to the Token Vector. <DIR>
+<DIR>
+
+<P>Token Vector has the value '2.3.'.
+<P>Token Vector is formatted with the $DDCFMT format.
+<P>Clause ID is set to '2'.
+<P>(This number is used as a power of 2 in order to set a bit in
+   the Attribute Vector Sum.)
+</DIR>
+</DIR>
+
+<P>At this point, the Clause String has a complete 02-49 Clause. <DIR>
+<DIR>
+
+<P>The value 2**2 is added to the Attribute Vector Sum.
+<P>The value of the Attribute Vector Sum is 4.
+<P>Token Vector is set to the value ' '.
+<P>Clause String is set to the value ' '.
+<P>Parse Mode is set to the value 'Identify Clause'. </DIR>
+</DIR>
+
+<P>The next token is obtained. It is 'PICTURE'. <DIR>
+<DIR>
+
+<P>Parse Mode has the value 'Identify Clause'. <DIR>
+<DIR>
+
+<P>The token is formatted with the $DDICFMT format.
+<P>The result is 'PICTURE'.
+<P>Parse Mode is given the value 'Building Clause'.
+<P>Clause Mode is given the value 'Picture Clause'.
+<P>Clause String is given the value 'PICTURE'. </DIR>
+</DIR>
+
+<P>Clause ID is set to 'UNDEFINED'.
+</DIR>
+</DIR>
+
+<P>The next token is obtained. It is 'IS'. <DIR>
+<DIR>
+
+<P>Parse Mode has the value 'Building Clause'.
+<P>Clause Mode has the value 'Picture Clause'. <DIR>
+<DIR>
+
+<P>The token is concatenated to the Clause String.
+<P>Clause String has the value 'PICTURE IS'.
+</DIR>
+</DIR>
+
+<P>Clause ID is left with the value 'UNDEFINED'.
+
+  </DIR>
+</DIR>
+
+<P>The next token is obtained. It is '9(6)V99'. <DIR>
+<DIR>
+
+<P>Parse Mode has the value 'Building Clause'.
+<P>Clause Mode has the value 'Picture Clause'. <DIR>
+<DIR>
+
+<P>The token is concatenated to the Clause String.
+<P>Clause String has the value 'PICTURE IS 9(6)V99'.
+  </DIR>
+</DIR>
+
+<P>Clause ID is set to '6'.
+<P>(The value in Clause ID is used as a power of 2 in order to
+   set a bit in the Attribute Vector Sum.) </DIR>
+</DIR>
+<P>At this point, the Clause String has a complete picture
+   clause. <DIR>
+<DIR>
+
+<P>The value 2**6 is added to the Attribute Vector Sum.
+<P>The value of the Attribute Vector Sum is 68.
+</DIR>
+</DIR>
+
+<P>Since this is the end of the data description entry, the
+   Attribute Vector Sum is formatted with the DDAVFMT format. <DIR>
+<DIR>
+
+<P>The result is '2.6.'. </DIR>
+</DIR>
+
+<P>The program attempts to appropriately process these attributes.
+</FONT><B><FONT FACE="Arial"><P><A NAME="Actions"></A>Actions taken for each
+clause
+</B></FONT><FONT SIZE=2>
+<P>The actions taken at the end of each clause is given here:
+<P>01 Clause
+
+<UL>
+<LI>Bit 1 is set in the attribute vector. </LI>
+<LI>Initial values are set for a new record.</LI></UL>
+
+
+<P>02-49 Clause
+
+<UL>
+<LI>Bit 2 is set in the attribute vector. </LI>
+<LI>Initial values are set for a new record.</LI></UL>
+
+
+<P>REDEFINES Clause
+
+<UL>
+<LI>Bit 3 is set in the attribute vector. </LI>
+<LI>The data name being redefined is stored in RDF_NAME.</LI></UL>
+
+
+<P>EXTERNAL Clause
+
+<UL>
+<LI>If ATTR_ERR equals 'Y', bit 4 is set in the attribute vector.
+    </LI>
+<LI>This clause is ignored.</LI></UL>
+<P>GLOBAL Clause
+<UL>
+<LI>If ATTR_ERR equals 'Y', bit 5 is set in the attribute vector.
+    </LI>
+<LI>This clause is ignored.</LI></UL>
+
+<P>PICTURE Clause
+
+<UL>
+<LI>Bit 6 is set in the attribute vector. </LI>
+<LI>The picture value is put into a standard format.</LI></UL>
+
+<P>USAGE Clause
+
+<UL>
+<LI>Bit 7 is set in the attribute vector. </LI>
+<LI>The usage value is put into a standard format.</LI></UL>
+
+<P>SIGN Clause
+
+<UL>
+<LI>If ATTR_ERR equals 'Y', bit 8 is set in the attribute vector.
+    </LI>
+<LI>This clause is ignored.</LI></UL>
+
+<P>SYNCHRONIZED Clause
+
+<UL>
+<LI>If ATTR_ERR equals 'Y', bit 9 is set in the attribute vector.
+    </LI>
+<LI>This clause is ignored.</LI></UL>
+
+<P>JUSTIFIED Clause
+
+<UL>
+<LI>If ATTR_ERR equals 'Y', bit 10 is set in the attribute
+    vector. </LI>
+<LI>This clause is ignored.</LI></UL>
+
+<P>BLANK WHEN ZERO Clause
+
+<UL>
+<LI>Bit 11 is set in the attribute vector. </LI>
+<LI>The BWZ_FLAG is set to 'Y'.</LI></UL>
+
+<P>VALUE Clause
+
+<UL>
+<LI>If ATTR_ERR equals 'Y', bit 12 is set in the attribute
+    vector. </LI>
+<LI>This clause is ignored.</LI></UL>
+
+<P>OCCURS Clause
+
+<UL>
+<LI>Bit 13 is set in the attribute vector.</LI>
+<LI>R2COB2 continues to build this clause until it has built
+    either:</LI></UL>
+<DIR>
+<DIR>
+
+<P>OCCURS ocr_value TIMES
+<P>or
+<P>OCCURS integer-1 TO ocr_value TIMES
+<P>at which point, it it simply ignores remaining tokens. The
+   first token that it encounters that identifies the beginning of a
+   new clause causes it to stop building the OCCURS clause
+   altogether. </DIR>
+</DIR>
+
+<P>66 Clause
+
+<UL>
+<LI>If ATTR_ERR equals 'Y', bit 14 is set in the attribute
+    vector. </LI>
+<LI>This clause is ignored.</LI></UL>
+
+<P>88 Clause
+
+<UL>
+<LI>If ATTR_ERR equals 'Y', bit 15 is set in the attribute
+    vector. </LI>
+<LI>This clause is ignored.</LI></UL>
+
+
+<P>COPY Clause
+
+<UL>
+<LI>If ATTR_ERR equals 'Y', bit 16 is set in the attribute
+    vector. </LI>
+<LI>This clause is ignored. </LI>
+<LI>No attempt is made to parse pseudo-text.</LI></UL>
+
+</FONT><B><FONT FACE="Arial">
+<P><A NAME="LevelNesting"></A>Level Nesting
+</B></FONT><FONT SIZE=2>
+<P>The R2COB2 data step keeps track of the depth of level nesting
+   within file description entries. Since it makes use of a stack
+   for tracking usage values, the index to this stack is the value
+   of the depth.
+</FONT><B><FONT FACE="Arial">
+<P><A NAME="UsageStack"></A>Usage Stack
+</B></FONT><FONT SIZE=2>
+<P>In the COBOL language, it is not required that every item have
+   an explicitly stated usage value. For this reason, R2COB2 keeps
+   track of each item's usage value in the STKUSAGE routine.
+<P>When an entry has a usage clause, its level number is compared
+   to the previous level number.  Depending on the result of the
+   comparison the usage stack is updated with the value in the usage
+   clause. On the other hand, if an entry does not have a usage
+   clause, the usage value is extracted from the usage stack.
+</FONT><B><FONT FACE="Arial">
+<P><A NAME="GroupStack"></A>Group Stack &amp; Group Data Set
+</B></FONT><FONT SIZE=2>
+<P>To track groups, it makes use of two data structures. First it
+   maintains a group stack which is used to keep track of the
+   position, within the file, at which a group begins and the total
+   number of bytes in that group. When a group is first encountered,
+   a new entry is pushed onto the group stack. As elementary items
+   within that group are encountered, the total number of bytes in
+   that group is incremented by the number of bytes in that item.
+   When the end of that group is encountered (that is, when a level
+   number that is less than or equal to the level number of the
+   group is encountered), the number of bytes in all groups on the
+   the stack are reevaluated, the group just ended is popped off of
+   the stack and an observation is output to the GROUP data set.
+</FONT><B><FONT FACE="Arial">
+<P><A NAME="RedefinitionStack"></A>Redefinition Stack
+</B></FONT><FONT SIZE=2>
+<P>The redefinition stack keeps track of the position and number
+   of bytes in entries with level numbers greater than the current
+   entry.  When redefinition is encountered, it uses this
+   information to update the ATBYTE and ITM_DISP variables.
+</FONT><B><FONT FACE="Arial">
+<P><A NAME="OffsetStack"></A>Offset Stack
+</B></FONT><FONT SIZE=2>
+<P>The offset stack keeps track of the position at which those
+   groups that occur more than once begin and the displacement of
+   each item within those groups.
+</FONT><B><FONT FACE="Arial">
+<P><A NAME="Conversion"></A>Conversion from Usage and Picture to
+   Informat
+</B></FONT><FONT SIZE=2>
+<P>All picture values are converted to a standard format. For
+   alphabetic or alphanumeric strings, the format is either 'A(w)'
+   or 'X(w)'.  For numbers, the format is '9(w)V9(f)'; where w and f
+   are numbers of bytes. For example, the picture 'S99999V99' is
+   converted to '9(5)V9(2)' and the picture 'X(48)' remains 'X(48)'.
+<OL>
+
+<LI>When USAGE is 'DISPLAY':</LI>
+<P>If PICTURE is 'A' OR 'X', then the informat is '$CHAR'
+<P>If PICTURE is '9', then
+<P>If BWZ_FLAG = 'Y', then the informat is 'ZDB'
+<P>Otherwise the informat is 'ZD'
+<LI>When USAGE is 'COMP' or 'COMP-4':</LI>
+<P>The PICTURE should be '9' and the informat is 'IB'
+<LI>When USAGE is 'COMP-1':</LI>
+<P>The PICTURE should be ' ' and the informat is 'RB4.'
+<LI>When USAGE is 'COMP-2' or 'BINARY':</LI>
+<P>The PICTURE should be ' ' and the informat is 'RB8.'
+<LI>When USAGE is 'COMP-3' or 'PCKDCML':</LI>
+<P>The PICTURE should be '9' and the informat is 'PD'
+<LI>When USAGE is 'INDEX':</LI>
+</OL>
+<DIR>
+<DIR>
+
+<P>The PICTURE should be ' ' and the informat is 'IB4.' </DIR>
+</DIR>
+
+<P>The variable PICTURE will have values in the form, 'A(w)' or
+   'X(w)', or in the form, '9(w)V9(f)'; where 'w' stands for the
+   whole part and 'f' stands for the fractional part. The whole and
+   the fraction are appropriately combined to produce a width and a
+   decimal for the SAS informat.
+<OL>
+
+<LI>When the informat is '$CHAR':</LI>
+<P>The WIDTH = WHOLE
+<LI>When the informat is 'ZD' or 'ZDB':</LI>
+<P>The WIDTH = (WHOLE + FRACTION)
+<P>The DECIMAL = FRACTION
+<LI>When the informat is 'IB':</LI>
+<P>The NUM_DIG = (WHOLE + FRACTION)
+<P>The DECIMAL = FRACTION
+<P>If (NUM_DIG GE 1) and (NUM_DIG LE 4) Then WIDTH = 2
+<P>If (NUM_DIG GE 5) and (NUM_DIG LE 9) Then WIDTH = 4
+<P>If (NUM_DIG GE 10) and (NUM_DIG LE 18) Then WIDTH = 8
+<LI>When the informat is 'PD':</LI></OL>
+<DIR>
+<DIR>
+
+<P>The WIDTH = CEIL((WHOLE + FRACTION + 1) / 2)
+<P>The DECIMAL = FRACTION
+  </DIR>
+</DIR>
+
+</FONT><B><FONT FACE="Arial">
+<P><A NAME="Switches"></A>Options available by way of the
+   SWITCHES data set
+</B></FONT><FONT SIZE=2><P>TRACEPRS (Trace Parse) (Default Value:
+    TRACEPRS='0')
+<P>Trace Parse determines the type of tracing information
+   produced while parsing data description entries.  <DIR>
+<DIR>
+
+<P>TRACEPRS = '0': No parse trace infromation is produced.
+<P>TRACEPRS = '4': Show Divisions, Entry Types and program
+                   statements.
+<P>TRACEPRS = '5': Show parsing variables.
+<P>TRACEPRS = '6': Show Divisions, Entry Types, program
+                   statements and parsing variables.
+<P>TRACEPRS = '9': Do nothing, but show the action of the Look
+   Ahead Buffer and the value of EOF. (It always shows EOF=1 twice
+   because it is looking one line ahead and recognizes the last line
+   in the file twice.) </DIR>
+</DIR>
+
+<P>TRACESTK (Trace Stack) (Default Value: TRACESTK='0')
+<P>Trace Stack determines the type of tracing information
+   produced by the stack routines. <DIR>
+<DIR>
+
+<P>TRACESTK = '0': No stack trace information is produced.
+<P>TRACESTK = '1': Show information used by routines: STKUSAGE,
+                   STKGROUP, STKREDEF, STKOFFST.
+<P>TRACESTK = '2': Show information used by routine: STKUSAGE.
+<P>TRACESTK = '3': Show information used by routine: STKGROUP.
+<P>TRACESTK = '4': Show information used by routine: STKREDEF.
+<P>TRACESTK = '5': Show information used by routine: STKOFFST.
+<P>TRACESTK = '6': Show information used by routines: STKGROUP,
+                   STKREDEF.
+<P>TRACESTK = '7': Show information used by routines: STKGROUP,
+                   STKREDEF, STKOFFST. </DIR>
+</DIR>
+
+<P>ATTR_ERR (Attribute Error) (Default Value: ATTR_ERR='N') <DIR>
+<DIR>
+
+<P>Set ATTR_ERR to 'Y' if you wish to flag unrecognized attributes.
+<P>Set ATTR_ERR to 'N' if you wish to process unrecognized
+   attributes. </DIR>
+
+</DIR>
+
+<P>SEVERAL (Several) (Default Value: SEVERAL='N') <DIR>
+<DIR>
+
+<P>Set SEVERAL to 'Y' if you wish to process more than one COBOL
+   source program or COPY members.
+<P>Set SEVERAL to 'N' if you wish to process only one COBOL
+   source program or COPY member. </DIR>
+</DIR>
+
+<P>DEL_FLLR (Delete FILLER) (Default Value: DEL_FLLR = 'Y') <DIR>
+<DIR>
+
+<P>Set DEL_FLLR to 'Y' if you wish to exclude entries, from the
+   INPUT statements produced, that have 'FILLER' in the data name.
+<P>Set DEL_FLLR to 'N' if you wish to include entries, in the
+   INPUT statements produced, that have 'FILLER' in the data name.
+</DIR>
+</DIR>
+
+<P>USE_AT (Use @) (Default Value: USE_AT = 'Y') <DIR>
+<DIR>
+
+<P>Set USE_AT to 'Y' if you wish to have the @ column pointer in
+   INPUT statements produced.
+<P>Set USE_AT to 'N' if you wish to have no @ column pointer in
+   INPUT statements produced. </DIR>
+</DIR>
+
+<P>MAKE_LBL (Make LABEL) (Default Value: MAKE_LBL = 'Y') <DIR>
+<DIR>
+
+<P>Set MAKE_LBL to 'Y' if you wish to have LABEL statements produced.
+<P>Set MAKE_LBL to 'N' if you want no LABEL statements produced.
+</DIR>
+</DIR>
+
+</FONT><B><FONT FACE="Arial">
+<P><A NAME="Extending"></A>Extending recognition of attributes of
+   data description entries
+
+<UL>
+</B></FONT><FONT SIZE=2>
+<LI>If you wish to add processing for new sets of attributes
+    within the data description entries, follow these
+    guidelines.</LI>
+<LI>Create a COBOL data description entry with a set of
+    attributes not yet implemented.</LI>
+<LI>Set TRACEPRS to '5' and ATTR_ERR to 'Y'.</LI>
+<LI>Execute COB2SAS, Release 2.</LI>
+<LI>Inspect the SAS Log for the message:</LI></UL>
+<DIR>
+<DIR>
+
+</FONT><FONT FACE="Courier New" SIZE=2>
+<P>UNRECOGNIZED ATTRIBUTES IN DATA DESCRIPTION </DIR>
+</DIR>
+
+
+<UL>
+</FONT><FONT SIZE=2>
+<LI>This shows you a list of that combination of attributes that
+    is not yet recognized.</LI>
+<LI>In the line above this message, find the value of AV_SUM.</LI>
+<LI>You must now edit R2COB1 and implement that combination
+    of attributes.</LI></UL>
+<DIR>
+<DIR>
+
+<P>For example, the attributes: <DIR>
+<DIR>
+
+</FONT><FONT FACE="Courier New" SIZE=2><P>02 FIELD PIC 99 SYNC </DIR>
+</DIR>
+
+</FONT><FONT SIZE=2>
+<P>result in AV_SUM=580. So, in DDAVFMT add, 580 = '2.6.9.'
+<P>'2.6.9.' is arrived at by inspecting the DDSHOFMT format and
+   adding a period to the end of each attribute's id number.  In
+   other words, in the DDSHOFMT format, 2 = '02-49 Clause', so
+   append a period after the 2.
+<P>Another way of saying this is that the 02-49 Clause sets bit 2
+   in the attribute vector, the PICTURE Clause sets bit 6 in the
+   attribute vector and the SYNCHRONIZED Clause sets bit 9 in the
+   attribute vector. </DIR>
+</DIR>
+
+
+<UL>
+<LI>Once you have added this to the DDAVFMT format in R2COB1, you
+    will most likely have to add appropriate processing for it in
+    R2COB2.  If you must extract any information from the clause,
+    edit the IN_DD routine. The clause will be in the CLS_STR. If you
+    must perform processing peculiar to this set of attributes when
+    the end of the entry is encountered, then add that in the
+    EODDNTRY routine.</LI></UL>
+<DIR>
+<DIR>
+
+<P>(NOTE: For clauses which must set Clause Mode to values other
+   than 'Level Clause' and 'Simple Clause', be sure to update the
+   EODDSCTN routine as well.)
+</DIR>
+</DIR>
+
+</FONT><B><FONT FACE="Arial">
+<P><A NAME="Modifying"></A>Modifying the program to parse other
+   entries
+</B></FONT><FONT SIZE=2>
+<P>If you wish to modify the program to parse entries other than
+   data description entries, follow these guidelines.
+<OL>
+
+<LI>Build a Token Format for the entry.</LI>
+
+
+<UL>
+<LI>Take the general format from the ANSI Reference Summary. </LI>
+<LI>Remove any clause that contains either ellipses or more than
+    1 programmer supplied word. </LI>
+<LI>Working down from the top of the general format, enter each
+    reserved word in the description token format. </LI>
+<LI>Items enclosed in braces will produce the same output when
+    formatted (for example, PICTURE and PIC). </LI>
+<LI>Simply assign a formatted value to each set of reserved words
+    (for example, 'PICTURE',PIC' = '9.').</LI>
+</UL>
+
+<LI>Build an Identify Clause Format for the entry.</LI>
+
+<UL>
+<LI>Take the general format from the ANSI reference summary. </LI>
+<LI>Enter the reserved word or words that identify each clause in
+    the entry. (In other words, enter each token that initiates a
+    clause in the entry.) </LI>
+<LI>In the case where the clause contains ellipses or more than 1
+    programmer supplied word, assign a unique value for the formatted
+    output. </LI>
+<LI>Assign a unique value for the formatted output to those
+    tokens that initiate the entire entry.  For example, the level
+    indicators. </LI>
+<LI>For all tokens that initiate a simple clause (that is, a
+    clause that does not contain an ellipses or more than 1
+    programmer supplied word), assign the value 'IDENTIFIED'. </LI>
+<LI>Any other token, when formatted, has the value
+    'UNIDENTIFIED'.</LI>
+</UL>
+
+
+<LI>Build a Clause Format for the entry.</LI>
+
+<UL>
+<LI>Take the general format from the ANSI Reference Summary. </LI>
+<LI>Remove any clause that contains either ellipses or more than
+    1 programmer supplied word. </LI>
+<LI>Working down from the top of the general format, combine the
+    formatted output from the Token Format to form each valid clause.
+    </LI>
+<LI>Programmer supplied words are assigned the value 'OTHER' in
+    the Token Format.</LI>
+
+<UL>
+<LI>Underlined reserved words are required in the clause. </LI>
+<LI>At most 1 formatted value is available for items in braces. </LI>
+<LI>It is up to you to form all possible valid combinations of
+    tokens within each clause.</LI></UL>
+<LI>The formatted output of the Clause Format is a string. Assign
+    values to this string by choosing sequential numbers starting at
+    the top and working down. </LI>
+<LI>All other values, when formatted, are assigned the value
+    'UNDEFINED'.</LI>
+</UL>
+</UL>
+
+<LI>Build an Attribute Vector Format.</LI>
+
+<UL>
+<LI>The formatted output from the Clause Format is treated as a
+    number. That number is used as an exponent of 2.  The result of
+    raising the base 2 to that exponent value is added to the
+    Attribute Vector Sum (AV_SUM). </LI>
+<LI>When the end of an entry is found (which is either at the end
+    of the section or the beginning of the next entry) the value in
+    AV_SUM is formatted with Attribute Vector Format. </LI>
+<LI>This formatted output is used to determine which attributes
+    are in the entry just completed.</LI>
+</UL>
+</OL>
+
+</FONT><B><FONT FACE="Arial">
+<P><A NAME="Acknowledgements"></A>Acknowledgements
+</B></FONT><FONT SIZE=2>
+<P>COBOL is an industry language and is not the property of any
+   company or any group of companies, or of any organization or any
+   group of organizations.
+<P>No warranty, expressed or implied, is made by any contributor
+   or by the CODASYL Programming Language Committee as to the
+   accuracy and functioning of the programming system and language.
+   Moreover, no responsibility is assumed by any contributor, or by
+   the committee, in connection therewith.
+<P>The authors and copyright holders of the copyrighted material
+   used herein <DIR>
+<DIR>
+
+<P>FLOW-MATIC (Trademark of Sperry Rand Corporation), Programming
+<P>for the UNIVAC(R) I and II, Data Automation Systems copyrighted
+<P>1958, 1959, by Sperry Rand Corporation; IBM Commercial Translator
+<P>Form No. F 28-8013, copyrighted 1959 by IBM;
+<P>FACT, DSI 27A5260-2760, copyrighted 1960 by Minneapolis-Honeywell </DIR>
+</DIR>
+
+<P>have specifically authorized the use of this material in whole
+   or in part, in the COBOL specifications.  Such authorization
+   extends to the reproduction and use of COBOL specifications in
+   programming manuals or similar publications.
+<P>Copies of ANSI standard X3.23-1985 are available from the
+   American National Standards Institute, 1430 Broadway, New York,
+   NY 10018.
+<P>IBM is a registered trademark of International Business
+   Machines Corporation.
+<P>SAS is a registered trademark of SAS Institute Inc., Cary, NC
+   USA
+<P>VMS is a trademark of Digital Equipment Corporation.
+</FONT></BODY>
+</HTML>

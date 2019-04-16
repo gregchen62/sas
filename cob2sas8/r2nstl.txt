@@ -1,0 +1,586 @@
+**********************************************************************
+***                                                                ***
+*** Please refer to the README file for installation information.  ***
+*** Do not use these installation instructions to install the      ***
+*** downloaded version of COB2SAS.                                 ***
+***                                                                ***
+**********************************************************************
+
+ *** COB2SAS, Release 2 Installation Guide
+
+
+
+ Files in which the programs are stored:
+
+     R2CMS   ........ Invokes COB2SAS on CMS.
+     R2MVS   ........ Invokes COB2SAS on MVS.
+     R2VMS   ........ Invokes COB2SAS on VMS(TM).
+     R2VSE   ........ Invokes COB2SAS on VSE.
+
+     R2COB1  ........ Creates formats used for parsing.
+     R2COB2  ........ Parses COBOL data description entries.
+                      Creates the data dictionary.
+                      Creates the group data set.
+     R2COB3  ........ Updates the data dictionary with the
+                      information in the group data set.
+     R2COB4  ........ Compresses COBOL data names to no
+                      more than 8 characters.
+     R2COB5  ........ Expands OCCURS variables.
+     R2COB6  ........ Uses the information in the data dictionary
+                      to produce SAS(R) language input statements.
+     R2COB7  ........ Uses the information in the data dictionary
+                      to produce SAS language label statements.
+
+
+
+ Files in which the documentation is stored:
+
+     R2NSTL  ........ COB2SAS, Release 2 Installation Guide
+     R2RFRN  ........ COB2SAS, Release 2 Reference
+     R2RNTS  ........ COB2SAS, Release 2 Release Notes
+     R2USGD  ........ COB2SAS, Release 2 Usage Guide
+     COPYRIT ........ COPYRIGHT Notice
+     DSCLMR  ........ DISCLAIMER
+     TDMK    ........ TRADEMARK Notice
+
+
+
+ Files in which test data and their results are stored:
+
+     CP1     ........ COBOL Program 1
+     CP1LOG  ........ Log of an execution on COBOL Program 1.
+     CP1LST  ........ Listing of an execution on COBOL Program 1.
+
+
+
+
+
+
+
+
+
+
+ --------------------------------------------------------------------
+ VMS is a trademark of Digital Equipment Corporation
+
+
+ * Media on which COB2SAS, Release 2 is distributed
+
+
+ COB2SAS, Release 2 is available on several different media.
+
+    * For the CMS, MVS and VSE operating systems, it is distributed
+      on either 9 track tape or IBM 3480 cartridge. This tape has
+      volser OCCOB2.
+
+    * For the VMS operating system, it is distributed on either
+      9 track tape or TK 50 cartridge. This tape has volser VMCOB2.
+
+    * It is also available on either  5.25 inch high density
+      diskette  or  3.5 inch high density diskette.
+
+ Regardless of the media on which it is distributed or the operating
+ system on which it is installed, the contents of all of the files
+ are identical.
+
+
+ * Installing COB2SAS, Release 2 from diskette
+
+    If you receive COB2SAS, Release 2 on diskette, you will need to
+ transfer the files on the diskette to your host computing system.
+ However, before transferring these files to your host computing
+ system, refer to the section of this guide that discusses installing
+ COB2SAS, Release 2 on your operating system. This section explains
+ how the programs should be installed on your operating system.
+
+    Since you are installing COB2SAS, Release 2 from diskette,
+ ignore the instructions that refer to mounting and installing from
+ the mailer tape. The instructions that refer to mounting and
+ installing from the mailer tape, assume that you have received
+ either a tape or cartridge.
+
+
+ * Important notes about the test program
+
+    After installing COB2SAS, Release 2, you may want to execute
+ the test program shown later in this guide. If you choose to do
+ so, there is no need for you to type in a copy of the test program
+ yourself. Since a copy of these installation instructions is in the
+ file R2NSTL, you can get a copy of the test program from R2NSTL.
+
+    Since the listing produced by the test program is created by
+ PROC PRINT, it is possible that the format of your listing and the
+ listing in CP1LST will be slightly different. If output is produced
+ and the values in that output match those in CP1LST, then the test
+ is successful.
+
+
+
+
+
+
+ COB2SAS, Release 2 Install Guide                        Page  1
+
+
+ * Installing under CMS
+
+ The R2CMS program refers to the other programs as if they are
+ members of a MACLIB called COB2SAS. For this reason, the programs
+ must be installed in a CMS MACLIB called COB2SAS.
+
+ You will need a total of 210 blocks of minidisk space, formatted at
+ 4096 bytes per block, to install the COB2SAS MACLIB and test data
+ sets.
+
+ The COB2SAS, Release 2 mailer tape has a volser of OCCOB2. After
+ mounting the mailer tape at virtual address 181, use the following
+ commands to load the COB2SAS MACLIB and test data sets.
+
+
+    VMFPLC2 REW
+    VMFPLC2 FSF 3
+    VMFPLC2 LOAD * * fm
+
+    where fm is the filemode of the receiving minidisk.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ COB2SAS, Release 2 Install Guide                        Page  2
+
+
+ * Testing under CMS
+
+ If you want to verify that COB2SAS, Release 2 is properly installed,
+ submit the following program to the SAS System. The SAS System must
+ be invoked with the SAS System options, MACRO and DQUOTE, in order
+ for COB2SAS, Release 2 to work properly.
+
+ Refer to Page 2 of this document for important notes about the test
+ program.
+
+
+    OPTIONS NONOTES NOSOURCE NOSOURCE2;
+    X FILEDEF INCOBOL DISK CP1 COBOL fm;
+    RUN;
+
+    %INCLUDE COB2SAS(R2CMS);
+    RUN;
+
+    PROC PRINT DATA=DICTNRY;
+       BY FILENAME NOTSORTED;
+       FORMAT RDF_NAME $8.;
+       ID LEVEL;
+       VAR NST_DPTH NEWNAME USAGE PICTURE INFMT ATBYTE BYTES
+           OCR_VAL RDF_NAME;
+    RUN;
+
+    where fm is the filemode of the minidisk with the test data sets.
+
+ Compare the SAS Log and Listing files with the results provided in
+ data sets:
+
+    CP1LOG LOG fm
+    CP1LST LISTING fm
+
+    where fm is the filemode of the minidisk on which they reside.
+
+
+
+ NOTE: If you encounter difficulties with this job, you can, if you
+       wish, use the MACLIST command to inspect the COB2SAS MACLIB.
+       MACLIST (which is a CMS command) is a convenient facility for
+       inspecting MACLIB's.
+
+       Also, since the R2CMS member of the COB2SAS MACLIB is included
+       from that MACLIB for execution, be sure to have no other files
+       with the name COB2SAS on or ahead of the minidisk with the
+       COB2SAS MACLIB.
+
+
+
+
+
+
+
+
+ COB2SAS, Release 2 Install Guide                        Page  3
+
+
+ * Installing under MVS
+
+ The R2MVS program refers to the other programs as if they are
+ members of a partitioned data set referenced with ddname COB2SAS.
+ For this reason, the programs must be installed in a partitioned
+ data set and any jobs that make use of the R2MVS program to execute
+ COB2SAS must refer to this PDS with ddname COB2SAS.
+
+ The PDS in which the COB2SAS programs are installed must have DCB
+ characteristics, LRECL 80 and RECFM FB. The suggested name for this
+ PDS is 'COB2SAS.PROGRAMS', however this name is not a requirement.
+
+ The COB2SAS, Release 2 mailer tape has a volser of OCCOB2.
+
+ Use the following JCL to create and load the COB2SAS PDS.
+
+ Any lines that you must edit are denoted by, ' <== VERIFY'.
+
+
+    //COB2DISK JOB acct-info                               <== VERIFY
+    //STEP1    EXEC PGM=IEBCOPY
+    //SYSPRINT DD SYSOUT=A
+    //SYSUT3   DD UNIT=SYSDA,SPACE=(TRK,(2,2))
+    //SYSUT4   DD UNIT=SYSDA,SPACE=(TRK,(2,2))
+    //INPUT    DD DISP=OLD,DSN=SAS.COB2SAS.PROGRAMS,
+    //            UNIT=TAPE,VOL=SER=OCCOB2,LABEL=(1,SL)
+    //OUTPUT   DD DSN=prefix.cob2sas.programs,             <== VERIFY
+    //            UNIT=SYSDA,VOL=SER=xxxxxx,               <== VERIFY
+    //            DISP=(NEW,CATLG),                        <== VERIFY
+    //            SPACE=(6160,(150,10,2)),
+    //            DCB=(DSORG=PO,LRECL=80,BLKSIZE=6160,RECFM=FB)
+    //SYSIN DD *
+      COPY INDD=INPUT,OUTDD=OUTPUT
+    /*
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ COB2SAS, Release 2 Install Guide                        Page  4
+
+
+ * Testing under MVS
+
+ If you want to verify that COB2SAS, Release 2 is properly installed,
+ submit the following program. The SAS System must be invoked with
+ the SAS System options, MACRO and DQUOTE, in order for COB2SAS,
+ Release 2 to work properly.
+
+ Refer to Page 2 of this document for important notes about the test
+ program.
+
+ Any lines that you must edit are denoted by, ' <==VERIFY'.
+
+    //TESTC2S JOB acct-info                                <== VERIFY
+    //        EXEC sas,OPTIONS='MACRO,DQUOTE'              <== VERIFY
+    //COB2SAS DD DISP=SHR,DSN=prefix.cob2sas.programs      <== VERIFY
+    //INCOBOL DD DISP=SHR,DSN=prefix.cob2sas.programs(CP1) <== VERIFY
+    //SYSIN   DD *
+
+      OPTIONS NONOTES NOSOURCE NOSOURCE2;
+
+      %INCLUDE COB2SAS(R2MVS);
+      RUN;
+
+      PROC PRINT DATA=DICTNRY;
+         BY FILENAME NOTSORTED;
+         FORMAT RDF_NAME $8.;
+         ID LEVEL;
+         VAR NST_DPTH NEWNAME USAGE PICTURE INFMT ATBYTE BYTES
+             OCR_VAL RDF_NAME;
+      RUN;
+
+    /*
+
+ Compare the SAS Log and Listing files with the results provided in
+ the CP1LOG and CP1LST members of the COB2SAS PDS.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ COB2SAS, Release 2 Install Guide                        Page  5
+
+
+ * Installing under VMS
+
+ The R2VMS program refers to the other programs as if they are
+ members of the VMS directory 'SAS$ROOT:<SAMPLES.BASE.COB2SAS>'.
+ For this reason, you must either install the programs in the VMS
+ directory 'SAS$ROOT:<SAMPLES.BASE.COB2SAS>', or install the programs
+ in some other directory and modify the R2VMS program to reference
+ the directory in which you install the COB2SAS programs.
+
+ You will need a total of 1740 blocks of free space, on your disk,
+ to install the COB2SAS programs and test data sets.
+
+ To install COB2SAS, Release 2, logon with a system account or an
+ account that has the privilege to write to the directory in which
+ the SAS System is installed and follow these instructions:
+
+
+    Create the COB2SAS directory with the command:
+       $ CREATE/DIRECTORY SAS$ROOT:<SAMPLES.BASE.COB2SAS>
+
+       where SAS$ROOT is a logical that references the directory
+       in which the SAS System is installed.
+
+
+    The COB2SAS, Release 2 mailer tape has a volser of VMCOB2.
+    Make the tape drive available to your process with the commands:
+       $ ALLOC tapedevicename TAPE
+       $ MOUNT/FOREIGN TAPE
+
+       where tapedevicename is the name of your tape drive.
+
+
+    Load the COB2SAS directory with the programs and test data sets:
+       $ BACKUP/LOG TAPE:COB2SAS.BCK  -
+       _$ SAS$ROOT:<SAMPLES.BASE.COB2SAS>/OWNER=PARENT
+
+
+    Detach the tape drive from your process:
+       $ DISMOUNT TAPE
+       $ DEALLOC TAPE
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ COB2SAS, Release 2 Install Guide                        Page  6
+
+
+ * Testing under VMS
+
+ If you want to verify that COB2SAS, Release 2 is properly installed,
+ submit the following program to the SAS System.
+
+ If you are executing under Version 6 of the SAS System, then the SAS
+ System must be invoked with the SAS System option, MACRO, in order
+ for COB2SAS, Release 2 to work properly.
+
+ Refer to Page 2 of this document for important notes about the test
+ program.
+
+
+    OPTIONS NONOTES NOSOURCE NOSOURCE2;
+    FILENAME INCOBOL 'SAS$ROOT:<SAMPLES.BASE.COB2SAS>CP1.DAT';
+    RUN;
+
+    %INCLUDE 'SAS$ROOT:<SAMPLES.BASE.COB2SAS>R2VMS.SAS';
+    RUN;
+
+    PROC PRINT DATA=DICTNRY;
+       BY FILENAME NOTSORTED;
+       FORMAT RDF_NAME $8.;
+       ID LEVEL;
+       VAR NST_DPTH NEWNAME USAGE PICTURE INFMT ATBYTE BYTES
+           OCR_VAL RDF_NAME;
+    RUN;
+
+ Compare the SAS Log and Listing files with the results provided in
+ the CP1LOG.DAT and CP1LST.DAT data sets.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ COB2SAS, Release 2 Install Guide                        Page  7
+
+
+ * Installing under VSE
+
+ The R2VSE program refers to the other programs as if they are
+ installed in a VSE LIBRARY. For this reason, the programs must
+ be installed in a VSE LIBRARY.
+
+ To install COB2SAS, Release 2, create a VSE LIBRARY in VSAM managed
+ space and use the LIBRARIAN utility to restore the COB2SAS.PROGRAMS
+ LIBRARY as explained in the following instructions.
+
+
+ Use the appropriate IDCAMS commands to allocate VSAM space for the
+ VSE LIBRARY. To get space requirements, use the following table.
+
+
+   Device    Tracks  º Device    Tracks  º Device    Tracks
+    Type    Required º  Type    Required º  Type    Required
+                     º                   º
+                     º  3340       43    º  3375       11
+    3330       28    º  3350       20    º  3380        9
+
+   For an FBA device, 420 Blocks are required.
+
+
+ The COB2SAS, Release 2 mailer tape has a volser of OCCOB2.
+
+ Use the following JCL to restore the COB2SAS LIBRARY.
+
+ Any lines that you must edit are denoted by, ' <== VERIFY'.
+
+
+    * $$ JOB   JNM=RESTORE                                 <== VERIFY
+    * $$ LST   CLASS=c                                     <== VERIFY
+    // JOB     RESTORE
+    // PAUSE   MOUNT COB2SAS MAILER TAPE
+    // ASSGN   SYSuuu,cuu                                  <== VERIFY
+    // MTC     REW,SYSuuu                                  <== VERIFY
+    // MTC     FSF,SYSuuu,04                               <== VERIFY
+    // DLBL    COB2SAS,'your.vsam.dataset',,VSAM,USER=cat  <== VERIFY
+    // EXEC    LIBR
+       DEFINE  LIB=COB2SAS
+       RESTORE SUBLIB=COB2SAS.PROGRAMS:COB2SAS.PROGRAMS  -
+               T=SYSuuu                                  - <== VERIFY
+               REPLACE=YES
+       LISTDIR LIB=COB2SAS OUTPUT=FULL
+    /*
+    /&
+    * $$ EOJ
+
+
+
+
+
+
+
+ COB2SAS, Release 2 Install Guide                        Page  8
+
+
+ * Testing under VSE
+
+ If you want to verify that COB2SAS, Release 2 is properly installed,
+ submit the following program. The SAS System must be invoked with
+ the SAS System options, MACRO and DQUOTE, in order for COB2SAS,
+ Release 2 to work properly.
+
+ Be sure to allocate plenty of space to the WORK library in order for
+ this job to successfully complete.
+
+ Refer to Page 2 of this document for important notes about the test
+ program.
+
+ Any lines that you must edit are denoted by, ' <== VERIFY'.
+
+    * $$ JOB   JNM=TESTC2S                                 <== VERIFY
+    * $$ LST   LST=device1,CLASS=c                         <== VERIFY
+    * $$ LST   LST=device2,CLASS=c                         <== VERIFY
+    // JOB     TESTC2S
+    // ASSGN   SYSIPT,SYSRDR
+    // ASSGN   SYS011,device1     SAS Log                  <== VERIFY
+    // ASSGN   SYSLST,device2     SAS Listing              <== VERIFY
+    // ASSGN   SYS006,SYSLST
+    *
+    // DLBL    INCOBOL,'cp1',0                             <== VERIFY
+    // EXTENT  SYSnnn,volser,1,0,begin,numberof            <== VERIFY
+    // ASSGN   SYSnnn,DISK,VOL=volser,SHR                  <== VERIFY
+    *
+    // DLBL    COB2SAS,'your.vsam.dataset',,VSAM,USER=cat  <== VERIFY
+    *
+    // EXEC    PROC=sasproc                                <== VERIFY
+    // LIBDEF  SOURCE,SEARCH=(COB2SAS.PROGRAMS)
+    // LIBDEF  PHASE,SEARCH=(saslib.sasbase)               <== VERIFY
+    // EXEC    SASVSE,SIZE=(SASVSE,42K),PARM='MACRO,DQUOTE'
+
+      OPTIONS NONOTES NOSOURCE NOSOURCE2;
+      PROC SOURCE OUTDD=INCOBOL OUTBLK=80 NOPRINT SEARCH SUBLIB=S;
+         SELECT CP1;  BEFORE;  AFTER;
+      RUN;
+      %INCLUDE S(R2VSE);
+      RUN;
+      PROC PRINT DATA=DICTNRY;
+         BY FILENAME NOTSORTED;
+         FORMAT RDF_NAME $8.;
+         ID LEVEL;
+         VAR NST_DPTH NEWNAME USAGE PICTURE INFMT ATBYTE BYTES
+             OCR_VAL RDF_NAME;
+      RUN;
+    /*
+    /&
+    * $$ EOJ
+
+ Compare the SAS Log and Listing files with the results provided in
+ the CP1LOG and CP1LST members of the COB2SAS.PROGRAMS SUBLIBRARY.
+
+ COB2SAS, Release 2 Install Guide                        Page  9

@@ -1,0 +1,319 @@
+      *
+      * PAYMENT-FILE SHOWS THAT COB2SAS IS ABLE TO KEEP
+      * TRACK OF THE STARTING BYTE OF EACH ITEM WITHIN
+      * NESTED RECORDS.
+      *
+      *
+      * COB2SAS TREATS VARYING LENGTH TABLES AS IF THEY
+      * ARE FIXED LENGTH. IN THIS EXAMPLE, MONTHLY-PAYMENT
+      * IS INTERPRETED AS OCCURRING 12 TIMES.
+      *
+      * NOTE: BY DEFAULT, COB2SAS, DOES NOT EXPAND MULTIPLE
+      *       OCCURRENCES. REFER TO THE COB2SAS, RELEASE 2
+      *       USAGE GUIDE OR REFERENCE FOR MORE INFORMATION
+      *       ON THE EXPANSION OF MULTIPLE OCCURRENCES.
+      *
+      *
+       FD  PAYMENT-FILE
+           LABEL RECORDS ARE OMITTED.
+      *
+       01  PAYMENT-RECORD.
+           05  ACCOUNTS.
+           10  MONTHLY-PAYMENT
+               PICTURE IS 9(6)V99
+               USAGE IS COMP-3
+               OCCURS 1 TO 12 TIMES DEPENDING ON CURRENT-MONTH.
+           10 CUSTOMER-INFO.
+              15 NAME.
+                 20 FIRST   PIC X(30).
+                 20 MI      PIC X(1).
+                 20 LAST    PIC X(30).
+              15 ADDRESS    PIC X(80).
+           05 LEDGER.
+           07 BALANCE-INFO OCCURS 4 TIMES.
+              10 RCVBLE.
+              15 LAST-AMOUNT-PAID   PIC 9(4)V99
+                                    COMP-3.
+              15 PAYMENT-DATE       USAGE DISPLAY
+                                    PIC XXXXXX.
+              15 REMAINING-BALANCE  PIC 9(4)V99
+                                    USAGE
+                                    COMP-3.
+      *
+      * USAGE-FILE SHOWS THAT COB2SAS APPROPRIATELY
+      * COMMUNICATES USAGE VALUES FROM LEVEL TO LEVEL.
+      *
+      *
+       FD  USAGE-FILE.
+      *
+       01  USG-A  PIC 9 USAGE COMP-3.
+           05  USG-B  PIC 9 USAGE DISPLAY.
+               10  USG-C  PIC 9 USAGE COMP.
+                   20  USG-D  PIC 9 USAGE COMP-1.
+                       25  USG-E  PIC 9 USAGE COMP-2.
+               10  USG-F  PIC 9.
+           05  USG-G  PIC 9.
+
+      *
+      * SALES-FILE SHOWS HOW COB2SAS:
+      *   1) HANDLES THE PICTURE VALUE
+      *   2) CONVERTS THE USAGE AND PICTURE INTO INFORMATS
+      *
+      *
+       FD  SALES-FILE
+           LABEL RECORDS ARE OMITTED.
+      *
+ 00010 01  SALES-RECORD1.
+ 00020     03 X5-X5        PIC X(05).
+ 00030     03 XXXXX-XXXXX  PIC XXXXX.
+ 00040     03 DEPT-IN123456789     PIC X(3).
+ 00050     03 PROD-IN1     PIC 9(18).
+ 00060     03 PROD-IN11    PIC 999999999999999999.
+ 00070     03 PROD-IN111   PIC 999999999V99999999.
+ 00080     03 PROD-IN22    PIC 999999999999999999
+                           USAGE IS DISPLAY
+                           BLANK WHEN ZERO.
+ 00090     03 PROD-IN222   PIC 999999999V99999999
+                           USAGE IS DISPLAY
+                           BLANK WHEN ZERO.
+000100     03 PROD-IN2     PIC 9999.                                    CP100100
+000110     03 DESCRIPT-IN3 PIC X(20).                                   CP100200
+000120     03 QTY-IN4      PIC S9(3).                                   CP100300
+000130     03 SALES-IN4-A  PIC S9(5)V9(5).                              CP100400
+000140     03 SALES-IN5    PIC S9(3) COMP.                              CP100500
+000150     03 SALES-IN5-A  PIC S9(5) COMP.                              CP100600
+000160     03 SALES-IN5-B  PIC S9(10) COMP.                             CP100700
+000170     03 SALES-IN5-C  PIC S9(5)V9(5) COMP.                         CP100800
+000180     03 SALES-IN6                   COMP-1.                       CP100900
+000190     03 SALES-IN7                   COMP-2.                       CP101000
+000200     03 SALES-IN8    PIC S9(5)V9(5) COMP-3.                       CP101100
+000210     03 SALES-IN9    PIC S9(5)V9(5) COMP-4.                       CP101200
+000220     03 DDTA         PIC X.                                       CP101300
+      *                                                                 CP101400
+      *
+      *
+      * REDEF1 AND REDEF2 SHOWS THAT COB2SAS IS ABLE TO
+      * HANDLE REDEFINITION.
+      *
+      *
+      *    LENGTH OF REDEFINING AREA IS EQUAL TO
+      *    LENGTH OF REDEFINED AREA.
+      *
+      *
+       FD  REDEF1.
+      *
+       01  REDEF1-TEST.
+           05  RDF1-A  PIC 99V99.
+           05  RDF1-B  REDEFINES RDF1-A  PIC 9999.
+      *
+           05  RDF1-C.
+               10  RDF1-D  PIC 9V9.
+               10  RDF1-E  PIC 9V9.
+           05  RDF1-F  REDEFINES RDF1-C.
+               10  RDF1-G  PIC 99.
+               10  RDF1-H  PIC 99.
+      *
+           05  RDF1-I  PIC 99V99.
+           05  RDF1-J  REDEFINES RDF1-I.
+               10  RDF1-K  PIC 99.
+               10  RDF1-L  PIC 99.
+      *
+           05  RDF1-M.
+               10 RDF1-N  PIC 99.
+               10 RDF1-O  PIC 99.
+           05  RDF1-P  REDEFINES RDF1-M  PIC 99V99.
+      *
+           05  RDF1-LAST-ITEM  COMPUTATIONAL-1.
+           05  RDF1-LAST-ITEM  COMPUTATIONAL-2.
+      *
+      *    LENGTH OF REDEFINING AREA IS LESS THAN
+      *    LENGTH OF REDEFINED AREA.
+      *
+      *
+       FD  REDEF2.
+      *
+       01  REDEF1-TEST.
+           05  RDF2-A  PIC 99V99.
+           05  RDF2-B REDEFINES RDF2-A  PIC 99.
+      *
+           05  RDF2-C.
+               10  RDF2-D  PIC 9V9.
+               10  RDF2-E  PIC 9V9.
+           05  RDF2-F  REDEFINES RDF2-C.
+               10  RDF2-G  PIC 9.
+               10  RDF2-H  PIC 9.
+      *
+           05  RDF2-I  PIC 99V99.
+           05  RDF2-J  REDEFINES RDF2-I.
+               10  RDF2-K  PIC 9.
+               10  RDF2-L  PIC 9.
+      *
+           05  RDF2-M.
+               10  RDF2-N  PIC 99.
+               10  RDF2-O  PIC 99.
+           05  RDF2-P  REDEFINES RDF2-M  PIC 9V9.
+      *
+           05  RDF2-LAST-ITEM  PIC 99 COMPUTATIONAL.
+           05  RDF2-LAST-ITEM  PIC 99 COMPUTATIONAL-4.
+      *
+      * COB2SAS HANDLES MULTIPLE REDEFINITION.
+      *
+      *
+       FD  MULTRDF1.
+      *
+       01  MULTRDF-TEST
+           05 MRDF-A  PIC 99V99  DISPLAY.
+           05 MRDF-B  REDEFINES MRDF-A.
+               10 MRDF-C  PIC 9.
+               10 MRDF-D  PIC 9.
+           05 MRDF-E  REDEFINES MRDF-A  PIC 99.
+           05 MRDF-F  COMP-3  OCCURS 2 TIMES.
+               10 MRDF-G  PIC 9(4)V9(2).
+               10 MRDF-H  PIC 9(3)V9(3).
+           05 MRDF-I  PIC 99V99  DISPLAY.
+           05 MRDF-J  REDEFINES MRDF-I  PIC 99.
+           05 MRDF-K  REDEFINES MRDF-I.
+               10 MRDF-L  PIC 9.
+               10 MRDF-M  PIC 9.
+           05 MRDF-N  PIC 9999  USAGE IS COMP.
+           05 MRDF-O  USAGE IS COMP-1.
+      *
+      * COB2SAS HANDLES IMPLICIT REDEFINITION
+      *
+       FD  IMP-RDF.
+       01  IMPRDF-RECORD1.
+           05  IMPRDF-A1 PIC 9999.
+           05  IMPRDF-B1.
+               10  IMPRDF-C1  PIC 99.
+               10  IMPRDF-D1  PIC 99.
+           05  IMPRDF-E1 USAGE IS COMP-1.
+           05  IMPRDF-F1 USAGE IS COMP-1.
+       01  IMPRDF-RECORD-2 COMPUTATIONAL-1.
+           05  IMPRDF-A2.
+           05  IMPRDF-B2.
+           05  IMPRDF-C2.
+      *
+      * STUDENT FILE SHOWS HOW COB2SAS HANDLES FILLER.
+      *
+      * ITEMS WITH DATA NAME 'FILLER' ARE STORED IN THE
+      * DATA DICTIONARY.
+      *
+      * ITEMS WITH DATA NAME 'FILLER' ARE NOT USED IN THE
+      * INPUT STATEMENT UNLESS DIRECTED TO DO SO BY SETTING
+      * THE DEL_FLLR OPTION, IN THE SWITCHES DATA SET, TO 'N'.
+      *
+      *
+       FD  STUDENT-FILE.
+       01  STUDENT-RECORD.
+           05  STUDENT-NUMBER       PIC X(09).
+           05  FILLER               PIC X(04).
+           05  LAST-NAME            PIC X(42).
+           05  FIRST-NAME           PIC X(21).
+           05  MI                   PIC X(01).
+           05  FILLER               PIC X(02).
+           05  DOB                  PIC S9(05)    COMP-3.
+           05  FILLER               PIC X(02).
+           05  CLASS                PIC X(02).
+           05  GRAD-DATE            PIC S9(07)    COMP-3.
+           05  FILLER               PIC X(07).
+           05  Q1-CLASS1            PIC S9(07)V99 COMP-3.
+           05  Q1-CLASS2            PIC S9(07)V99 COMP-3.
+           05  FILLER               PIC X(07).
+           05  Q2-CLASS1            PIC S9(07)V99 COMPUTATIONAL-3.
+           05  Q2-CLASS2            PIC S9(07)V99 COMPUTATIONAL-3.
+           05  FILLER               PIC X(07).
+           05  Q3-CLASS1            PIC S9(07)V99 COMPUTATIONAL-3.
+           05  Q3-CLASS2            PIC S9(07)V99 COMPUTATIONAL-3.
+           05  FILLER               PIC X(07).
+           05  Q4-CLASS1            PIC S9(07)V99 COMPUTATIONAL-3.
+           05  Q4-CLASS2            PIC S9(07)V99 COMPUTATIONAL-3.
+      *
+      * OTHER FEATURES OF COB2SAS:
+      *
+      *    1) IT HONORS SD, AS WELL AS, FD.
+      *    2) IT HANDLES LEVEL NUMBERS 1 THRU 9, AS WELL AS,
+      *       01 THRU 09.
+      *    3) IN THE ABSENCE OF A DATA NAME, 'FILLER' IS ASSUMED.
+      *    4) IT IGNORES 88 AND 66 LEVEL CLAUSES.
+      *    5) IT IGNORES THE VALUE CLAUSE WHEN USED ON LEVELS
+      *       OTHER THAN 88.
+      *    6) IT HANDLES VALID ENTRIES REGARDLESS OF STYLISTIC
+      *       GUIDELINES USED.
+      *
+      *
+       SD  SORT-BY-NAME-FILE.
+      *
+       01  STUDENT-RECORD.
+           05  LAST-NAME                PIC X(42).
+           05  FIRST-NAME               PIC X(21).
+           05  FILLER                   PIC X(04).
+           05  STUDENT-NUMBER           PIC X(09).
+      *
+      *
+       FD  LEVEL-FILE.
+      *
+       1   LEVEL-1-ITEM  PIC 99.
+           7  LEVEL-7-ITEM  PIC 99.
+              9  LEVEL-9-ITEM-A  PIC 9 OCCURS 9 TIMES.
+              9  LEVEL-9-ITEM-B  PIC 9.
+           5  LEVEL-5-RECORD  USAGE IS COMP-2.
+              10  LEVEL-10-ITEM.
+                 20  LEVEL-20-ITEM.
+           2  LEVEL-2-ITEM  PIC 99.
+                 4  LEVEL-4-ITEM  PIC 99  COMP-3.
+                    6  LEVEL-6-ITEM  PIC 99  COMP.
+              3  LEVEL-3-ITEM  PIC 99.
+      *
+      *
+       SD  IMPLIED-FILLER-FILE.
+      *
+       01  IMPLIED-FILLER-RECORD.
+           05   COMPUTATIONAL-2.
+           05   EXPLICIT-FIELD-1  PICTURE IS 9.
+           05   COMPUTATIONAL-2.
+      *
+      *
+       FD  VALUE-88-66-FILE.
+      *
+       01  DURATION-IN-MINUTES.
+           05  TRF-DURATION  PIC S9(4)V999 COMP-3 VALUE +0.
+               88  EXCP          VALUE 20.
+               88  CPU           VALUE 21.
+           05  TRF-QUOT-MIN  PIC S9(5) COMP-3 VALUE +0.
+               66  PREFERED-RATIO RENAMES TRF-QUOT-MIN.
+           05  TRF-60-SEC-RND  PIC S999 COMP-3 VALUE +60.
+           05  TRF-30-SEC-RND  PIC S999 COMP-3 VALUE +30.
+           05  TRF-12-SEC-RND  PIC S999 COMP-3 VALUE +12.
+           05  TRF-06-SEC-RND  PIC S999 COMP-3 VALUE +06.
+           05  TRF-01-SEC-RND  PIC S999 COMP-3 VALUE +01.
+      *
+      *
+       FD  ANY-STYLE.
+      *
+       01
+
+               FREE-FORM-RECORD.
+               7   FREE-1                       PICTURE
+
+
+
+                     99.
+                     88
+                         ASH
+                     VALUE 20.
+                     88
+                  TRASH
+                  VALUE
+           21.
+      /
+           32      FREE-2
+                          PIC X(80).
+      D
+           32        FREE-3         USAGE IS COMP-3.
+           35 FREE-4 PIC IS S9V9.  8 FREE-5 PIC IS S99V9. 9 FREE-6
+      -                                         PICTURE IS S99V99.
+      *
+           35       FREE-7         USAGE IS COMP-3.
+            35 FREE-8 PICTURE S9.  38 FREE-9 PIC 9.  9 FREE-10
+                                                      PIC IS
+                                                      9.
