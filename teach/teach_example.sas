@@ -218,3 +218,82 @@ subject="SAS email test"
 set a;
 put v1;
 run;
+
+*26.Hash;
+data a;
+input id $ var1;
+datalines;
+a1 1
+a2 2
+a3 3
+a4 4
+;run;
+
+data b;
+input id $;
+datalines;
+a2
+a1
+a4
+a5
+a6
+;run;
+
+data c;
+input id $ var2;
+datalines;
+a1 11
+a2 22
+a3 33
+a4 44
+a5 55
+;run;
+
+data d;
+format var1 var2 6.;
+if _n_=1 then do;
+	declare hash h(dataset:'work.a',hashexp:16);
+		h.definekey('id');
+		h.definedata('var1');
+		h.definedone();
+	declare hash g(dataset:'work.c',hashexp:16);
+		g.definekey('id');
+		g.definedata('var2');
+		g.definedone();
+	call missing(var1,var2);
+end;
+set b;
+rc1=h.find();
+rc2=g.find();
+run;
+
+*27.Hash (2);
+data b;
+input id $;
+datalines;
+a2
+a1
+a4
+a5
+a6
+;run;
+
+data c;
+input id $ var2;
+datalines;
+a1 11
+a2 22
+a3 33
+a4 44
+a5 55
+;run;
+
+data e;
+if _n_=1 then do;
+	declare hash g(dataset:'work.b',hashexp:16);
+		g.definekey('id');
+		g.definedone();
+end;
+set c;
+if g.find()=0;
+run;
